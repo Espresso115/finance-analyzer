@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
+import connectDB from "./config/database.js";
+import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 
@@ -9,6 +11,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use('/api/v1/auth', authRoutes);
 
 app.get("/health", (req, res) => {
   res.json({
@@ -35,8 +40,10 @@ app.get("/test-llm", async (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`API Gateway running on port ${PORT}`);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`API Gateway running on port ${PORT}`);
+  });
 });
 
 
