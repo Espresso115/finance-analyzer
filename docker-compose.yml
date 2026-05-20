@@ -1,0 +1,71 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: financial-ai-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: financial-ai-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: financial-ai-chromadb
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: financial-ai-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./apps/n8n/workflows:/workflows
+
+  api-gateway:
+    build: ./apps/api-gateway
+    container_name: financial-ai-api-gateway
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongodb
+      - redis
+      - chromadb
+      - llm-service
+    environment:
+      - PORT=4000
+      - LLM_SERVICE_URL=http://llm-service:8000
+
+  llm-service:
+    build: ./apps/llm-service
+    container_name: financial-ai-llm-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+
+volumes:
+  mongodb_data:
+  redis_data:
+  chroma_data:
+  n8n_data:
