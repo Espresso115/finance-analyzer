@@ -1,6 +1,6 @@
 # Task Tracker
 
-## Completed Tasks (Days 1-7)
+## Completed Tasks (Days 1-11)
 - [x] Create monorepo root and package manager workspace
 - [x] Scaffold React frontend and Node.js API gateway
 - [x] Create Python service folder skeletons
@@ -26,14 +26,28 @@
 - [x] Build protected route wrapper, dashboard shell, and user menu/logout
 - [x] Add frontend auth tests and Day 7 backend auth tests
 - [x] Verify full monorepo test suite (20/20 tests passing)
+- [x] Add current-user endpoint (`GET /api/v1/users/me`)
+- [x] Add self/admin user lookup (`GET /api/v1/users/:userId`)
+- [x] Add user settings endpoints (`GET/PUT /api/v1/users/settings`)
+- [x] Add password change endpoint (`POST /api/v1/users/change-password`)
+- [x] Add avatar upload endpoint (`POST /api/v1/users/avatar`)
+- [x] Add account soft delete (`DELETE /api/v1/users/me`)
+- [x] Add API key generation, list, and revoke endpoints
+- [x] Store API keys as SHA-256 hashes and expose secret only on creation
+- [x] Build frontend app shell, profile, settings/password, and API-key pages
+- [x] Add API constants, response helpers, request ID middleware, standardized 404, and global error middleware
+- [x] Add OpenAPI JSON and lightweight docs page
+- [x] Improve frontend API error handling
+- [x] Verify full monorepo test suite (30/30 tests passing), frontend lint, and frontend build
 
-## In-Progress Tasks (Day 8 Focus)
-- [ ] Expand user profile management endpoints and frontend profile page
-- [ ] Add API key generation/list/revoke endpoints and management UI
-- [ ] Add user settings endpoints and UI
+## In-Progress Tasks (Day 12 Focus)
+- [ ] Add financial data models/endpoints for stocks, forex, crypto, and search
+- [ ] Decide external provider integration details while preserving mock quote fallback
+- [ ] Refine Redis caching strategy for market data
 
-## Future Tasks (Days 9-30)
-- [ ] Complete Week 2 user settings, API documentation, and financial dashboard
+## Future Tasks (Days 13-30)
+- [ ] Add financial data filtering, aggregation, and export endpoints
+- [ ] Build financial dashboard, search, watchlist, and visualization UI
 - [ ] Build Frontend Dashboard and Watchlists
 - [ ] Set up Vector DB (ChromaDB) connection and Document parsing pipeline during the document/RAG phase
 - [ ] Integrate local LLM and RAG logic

@@ -6,6 +6,11 @@ const ApiKeySchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  keyPrefix: {
+    type: String,
+    required: true,
+    index: true
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -17,6 +22,10 @@ const ApiKeySchema = new mongoose.Schema({
     trim: true
   },
   revokedAt: {
+    type: Date,
+    default: null
+  },
+  lastUsedAt: {
     type: Date,
     default: null
   }

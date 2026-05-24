@@ -58,3 +58,37 @@
 - Added frontend tests for login/register rendering and protected-route behavior.
 - Added `frontend` test script and verified frontend build.
 - Verified full monorepo tests: API Gateway 17/17, frontend 3/3, total 20/20 passing.
+
+## [Day 8] - 2026-05-24
+- Added current-user endpoint: `GET /api/v1/users/me`.
+- Added protected user lookup: `GET /api/v1/users/:userId` for self/admin access.
+- Added user settings endpoints: `GET /api/v1/users/settings`, `PUT /api/v1/users/settings`.
+- Added password change endpoint: `POST /api/v1/users/change-password`.
+- Added avatar upload endpoint: `POST /api/v1/users/avatar`.
+- Added account soft delete endpoint: `DELETE /api/v1/users/me`.
+- Extended user preferences with market alerts and default watchlist.
+- Added frontend app shell navigation plus profile and settings/password pages.
+
+## [Day 9] - 2026-05-24
+- Added API key generation using `fai_...` random secrets.
+- Store API keys as SHA-256 hashes only.
+- Added API key prefix, revoked timestamp, and last-used metadata.
+- Added `GET /api/v1/users/api-keys`, `POST /api/v1/users/api-keys`, and `DELETE /api/v1/users/api-keys/:keyId`.
+- Added frontend API key management page.
+- Added Day 8-9 API test coverage; API Gateway reached 24 passing tests at this checkpoint.
+
+## [Day 10] - 2026-05-24
+- Added API constants in `src/config/app.js`.
+- Mounted API routes through shared `/api/v1` prefix constants.
+- Added response helper utilities for success, error, and paginated responses.
+- Added request ID middleware and `X-Request-Id` response header.
+- Added standardized 404 and global error middleware.
+
+## [Day 11] - 2026-05-24
+- Added OpenAPI JSON endpoint at `GET /api/v1/docs/openapi.json`.
+- Added lightweight API docs page at `GET /api/v1/docs`.
+- Documented auth, users/settings/API-key, and market quote routes.
+- Added frontend `.env.example` with `VITE_API_BASE_URL`.
+- Improved frontend API error parsing for legacy and standardized error response shapes.
+- Added form-level errors to profile, settings/password, and API-key frontend pages.
+- Verified final Day 11 state: `pnpm test` passes (API Gateway 27/27, frontend 3/3), `pnpm --filter frontend lint` passes, and `pnpm --filter frontend build` passes.

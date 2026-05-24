@@ -6,7 +6,9 @@ const UserProfileSchema = new mongoose.Schema({
   company: { type: String, default: '' },
   preferences: {
     theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
-    notificationsEnabled: { type: Boolean, default: true }
+    notificationsEnabled: { type: Boolean, default: true },
+    marketAlertsEnabled: { type: Boolean, default: false },
+    defaultWatchlist: { type: [String], default: [] }
   }
 }, { _id: false });
 
@@ -36,6 +38,14 @@ const UserSchema = new mongoose.Schema({
   profile: {
     type: UserProfileSchema,
     default: () => ({})
+  },
+  lastLoginAt: {
+    type: Date,
+    default: null
+  },
+  deletedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true 

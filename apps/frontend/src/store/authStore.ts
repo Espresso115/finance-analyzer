@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi, configureAuthInterceptors } from '../services/api';
+import { authApi, configureAuthInterceptors, getApiErrorMessage, userApi } from '../services/api';
 import type { AuthResponse, AuthUser, LoginPayload, RegisterPayload } from '../types/auth';
 
 type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'unauthenticated';
@@ -11,6 +11,8 @@ type AuthState = {
   status: AuthStatus;
   error: string | null;
   hydrate: () => Promise<void>;
+  syncUser: () => Promise<void>;
+  setUser: (user: AuthUser) => void;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   refreshAccessToken: () => Promise<string | null>;
@@ -54,14 +56,6 @@ const clearStoredAuth = () => {
   localStorage.removeItem(USER_KEY);
 };
 
-const getErrorMessage = (error: unknown) => {
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return 'Something went wrong. Please try again.';
-};
-
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   accessToken: null,
@@ -83,6 +77,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user, accessToken, refreshToken, status: 'authenticated', error: null });
   },
 
+  syncUser: async () => {
+    const { user } = await userApi.getMe();
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    set({ user, status: 'authenticated', error: null });
+  },
+
+  setUser: (user) => {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    set({ user });
+  },
+
   login: async (payload) => {
     set({ status: 'loading', error: null });
 
@@ -90,7 +95,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const auth = persistAuth(await authApi.login(payload));
       set({ ...auth, status: 'authenticated', error: null });
     } catch (error) {
-      set({ status: 'unauthenticated', error: getErrorMessage(error) });
+      set({ status: 'unauthenticated', error: getApiErrorMessage(error) });
       throw error;
     }
   },
@@ -102,7 +107,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const auth = persistAuth(await authApi.register(payload));
       set({ ...auth, status: 'authenticated', error: null });
     } catch (error) {
-      set({ status: 'unauthenticated', error: getErrorMessage(error) });
+      set({ status: 'unauthenticated', error: getApiErrorMessage(error) });
       throw error;
     }
   },

@@ -1,7 +1,7 @@
 # Current State
 
 ## Detected Progress Level
-The project is currently at **Day 7** of development — **Week 1 authentication milestone complete and verified**.
+The project is currently at **Day 11** of development — **Week 2 user management and API architecture baseline complete and verified**.
 The Day 6 tracker draft had started planning document/RAG ingestion, but that was ahead of the `BUILD_PLAN_30_DAYS.md` sequence. Week 1 has been realigned around authentication end-to-end, and document ingestion is deferred to the later document/RAG phase.
 
 ## Completed Features
@@ -37,10 +37,30 @@ The Day 6 tracker draft had started planning document/RAG ingestion, but that wa
   - Added Zustand auth store with persisted user, access token, refresh token, hydrate, refresh, and logout actions.
   - Added React Hook Form + Zod login/register validation.
   - Added protected route wrapper and user menu logout.
-- **Full Test Suite (Day 7):** 20/20 tests passing across API Gateway and frontend suites.
+- **User Management (Day 8-9):**
+  - `GET /api/v1/users/me` returns the current sanitized user.
+  - `GET /api/v1/users/:userId` allows self lookup and admin lookup, blocks other users.
+  - `GET/PUT /api/v1/users/settings` handles theme, notification preferences, market alerts, and default watchlist.
+  - `POST /api/v1/users/change-password` validates current password before changing.
+  - `POST /api/v1/users/avatar` stores image uploads under `apps/api-gateway/uploads/avatars`.
+  - `DELETE /api/v1/users/me` soft deletes the user and revokes active API keys.
+  - API keys are generated as `fai_...` secrets, stored only as SHA-256 hashes, listed by prefix, and revocable.
+- **Frontend Week 2 Screens (Day 8-9):**
+  - Added authenticated app shell navigation.
+  - Added profile, settings/password, and API-key management pages.
+  - Added frontend `.env.example` with `VITE_API_BASE_URL`.
+- **API Architecture (Day 10-11):**
+  - Added shared API prefix constants.
+  - Added response helper utilities for success, error, and paginated responses.
+  - Added request ID middleware with `X-Request-Id`.
+  - Added standardized 404 and global error middleware.
+  - Added OpenAPI JSON at `GET /api/v1/docs/openapi.json`.
+  - Added lightweight docs page at `GET /api/v1/docs`.
+  - Improved frontend API error extraction and form-level error handling.
+- **Full Test Suite (Day 11):** 30/30 tests passing across API Gateway and frontend suites.
 
 ## Active Development Focus
-Week 1 is complete. Ready to begin **Week 2 / Day 8**: user management/profile expansion, API key management, user settings, and related frontend pages.
+Ready to begin **Day 12**: financial data management. Start with financial data models/endpoints and external API integration strategy while preserving the existing protected mock quote route and Redis caching tests.
 
 ## Known Issues
 - `packages/*` monorepo packages are empty skeletons and need configuration files.
@@ -48,7 +68,9 @@ Week 1 is complete. Ready to begin **Week 2 / Day 8**: user management/profile e
 - `turbo.json` `outputs` key produces cosmetic warnings for test tasks because no coverage files are emitted. Tests still pass.
 
 ## Next Tasks
-- Day 8: Build current-user/profile endpoints and frontend profile page.
-- Day 8-9: Add API key management endpoints/UI and user settings.
+- Day 12: Add financial data models/endpoints for stocks/forex/crypto search and quote history.
+- Day 12: Refine external provider strategy around current mock quote service and Redis cache.
+- Day 13: Add data filtering/aggregation/export endpoints.
+- Day 13-14: Build the financial dashboard, search, watchlist, and visualization UI.
 - Defer document upload, PDF parsing, ChromaDB indexing, and RAG integration until the document/RAG phase.
 - Optionally configure `turbo.json` test outputs or add coverage output to suppress Turborepo warnings.

@@ -1,19 +1,11 @@
-import { UserMenu } from '../components/UserMenu';
+import { AppShell } from '../components/AppShell';
 import { useAuthStore } from '../store/authStore';
 
 export function DashboardPage() {
   const user = useAuthStore((state) => state.user);
 
   return (
-    <main className="dashboard-page">
-      <header className="dashboard-header">
-        <div>
-          <span className="eyebrow">Authenticated</span>
-          <h1>Workspace</h1>
-        </div>
-        <UserMenu />
-      </header>
-
+    <AppShell>
       <section className="workspace-grid" aria-label="Workspace overview">
         <article>
           <span>Profile</span>
@@ -31,6 +23,6 @@ export function DashboardPage() {
           <p>Week 2 begins with profile and API key management.</p>
         </article>
       </section>
-    </main>
+    </AppShell>
   );
 }

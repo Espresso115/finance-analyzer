@@ -103,6 +103,9 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    user.lastLoginAt = new Date();
+    await user.save();
+
     res.json(buildAuthPayload(user));
   } catch (error) {
     console.error(`Login error: ${error.message}`);

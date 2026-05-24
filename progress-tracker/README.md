@@ -30,14 +30,24 @@ Each day should end with a short verified update:
 - Day 5: Completed profile endpoints and protected market quote caching
 - Day 6: Realigned tracker with the build plan and completed backend auth gaps
 - Day 7: Completed Week 1 authentication milestone end-to-end
+- Day 8: Completed current-user, profile, settings, password, avatar, and account soft-delete APIs plus frontend profile/settings screens
+- Day 9: Completed API key generation, listing, revocation, hash-only storage, and frontend API key UI
+- Day 10: Added API response helpers, request IDs, shared API prefix constants, standardized 404, and global error middleware
+- Day 11: Added OpenAPI JSON/docs page and frontend API error handling polish
 
 ## Latest Verification
 
 - `pnpm test` passes across the monorepo.
-- API Gateway: 3 suites, 17 tests passing.
+- API Gateway: 5 suites, 27 tests passing.
 - Frontend: 1 suite, 3 tests passing.
+- `pnpm --filter frontend lint` passes.
+- `pnpm --filter frontend build` passes.
 
 ## Planning Note
 
 The earlier Day 6 document-ingestion plan was ahead of the build sequence. Document parsing, ChromaDB indexing, and RAG work are deferred to the later document/RAG phase. Week 1 is now aligned with the `BUILD_PLAN_30_DAYS.md` authentication milestone.
+
+## Current Handoff
+
+The project is ready to begin Day 12 financial data management. Keep using small milestones and run at least `pnpm test` after backend changes and `pnpm --filter frontend build` after frontend changes.
 

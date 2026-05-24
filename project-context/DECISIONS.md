@@ -17,3 +17,10 @@
 - Document ingestion, parser-service implementation, ChromaDB indexing, and RAG work are deferred to the later document/RAG phase.
 - The current architecture still intentionally uses Node/Express + MongoDB for the API Gateway rather than migrating to FastAPI + PostgreSQL from the generic build plan language.
 - Access tokens and refresh tokens are implemented in the API Gateway; frontend stores them locally for the current development phase and refreshes access tokens on 401 responses.
+
+## Day 8-11 Decisions
+- API keys are returned only once on creation; only SHA-256 hashes are stored in MongoDB.
+- Account deletion is soft delete (`deletedAt`) and revokes active API keys.
+- Avatar uploads are stored locally under `apps/api-gateway/uploads/avatars` for the current local-development phase.
+- API standardization was added incrementally through helpers, request IDs, 404/error middleware, and docs endpoints without rewriting all existing working responses.
+- OpenAPI is currently maintained as a lightweight in-repo JSON object instead of adding Swagger UI dependencies.
