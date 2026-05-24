@@ -19,6 +19,7 @@ Establish a secure, foundational authentication system within the API Gateway, i
 - [x] Set up Express Router mapping (`routes/auth.routes.js`).
 - [x] Create JWT verification Middleware (`middleware/auth.middleware.js`).
 - [x] Mount the authentication endpoints at `/api/v1/auth`.
+- [x] Implement automated Test Suite for JWT Edge Cases & Database Race Conditions.
 
 ---
 
@@ -27,3 +28,5 @@ Establish a secure, foundational authentication system within the API Gateway, i
 - `/api/v1/auth/register` successfully checks for existing emails/usernames, hashes passwords via `bcryptjs`, and saves to MongoDB.
 - `/api/v1/auth/login` successfully compares hashed passwords and issues standard Access Tokens via `jsonwebtoken`.
 - `protect` middleware correctly parses `Bearer` tokens from the `Authorization` header and fetches user details from MongoDB for secure routes.
+- `jest` + `supertest` automated edge case suite fully implemented, verifying expired tokens, tampered signatures, missing bearer headers, API contracts, and simultaneous db writes.
+- Handled MongoDB duplicate key `E11000` errors resulting from high-concurrency race conditions.

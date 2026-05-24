@@ -24,4 +24,20 @@ Each day should end with a short verified update:
 ## Current Status
 
 - Day 1: Completed foundation scaffold and verified toolchain
+- Day 2: Completed local runtime environment and service communication
+- Day 3: Completed MongoDB connection and core Mongoose models
+- Day 4: Completed initial authentication endpoints and JWT middleware
+- Day 5: Completed profile endpoints and protected market quote caching
+- Day 6: Realigned tracker with the build plan and completed backend auth gaps
+- Day 7: Completed Week 1 authentication milestone end-to-end
+
+## Latest Verification
+
+- `pnpm test` passes across the monorepo.
+- API Gateway: 3 suites, 17 tests passing.
+- Frontend: 1 suite, 3 tests passing.
+
+## Planning Note
+
+The earlier Day 6 document-ingestion plan was ahead of the build sequence. Document parsing, ChromaDB indexing, and RAG work are deferred to the later document/RAG phase. Week 1 is now aligned with the `BUILD_PLAN_30_DAYS.md` authentication milestone.
 

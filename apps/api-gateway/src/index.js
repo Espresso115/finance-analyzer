@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import axios from "axios";
 import connectDB from "./config/database.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import marketRoutes from "./routes/market.routes.js";
+import redisClient from "./config/redis.js";
 
 dotenv.config();
 
@@ -14,6 +17,9 @@ app.use(express.json());
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/market', marketRoutes);
+
 
 app.get("/health", (req, res) => {
   res.json({
@@ -40,11 +46,20 @@ app.get("/test-llm", async (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`API Gateway running on port ${PORT}`);
+if (process.env.NODE_ENV !== 'test') {
+  connectDB().then(async () => {
+    try {
+      await redisClient.connect();
+    } catch (err) {
+      console.error('Failed to connect to Redis on startup:', err.message);
+    }
+    app.listen(PORT, () => {
+      console.log(`API Gateway running on port ${PORT}`);
+    });
   });
-});
+}
+
+export default app;
 
 
 /*app.get("/test-llm", async (req, res) => {

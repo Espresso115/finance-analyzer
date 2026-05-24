@@ -11,3 +11,9 @@
 ## Architectural Constraints
 - **Strict Separation of Concerns:** Node.js must not run heavy data processing or NLP tasks. Python must not handle user sessions, JWT validation, or general public API routing.
 - **Docker Compatibility:** All services must remain containerizable and rely on `docker-compose.yml` for local orchestration. Avoid local-only dependencies that break container builds.
+
+## Day 6-7 Planning Correction
+- Week 1 remains scoped to authentication end-to-end per `BUILD_PLAN_30_DAYS.md`.
+- Document ingestion, parser-service implementation, ChromaDB indexing, and RAG work are deferred to the later document/RAG phase.
+- The current architecture still intentionally uses Node/Express + MongoDB for the API Gateway rather than migrating to FastAPI + PostgreSQL from the generic build plan language.
+- Access tokens and refresh tokens are implemented in the API Gateway; frontend stores them locally for the current development phase and refreshes access tokens on 401 responses.
