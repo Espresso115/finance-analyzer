@@ -20,5 +20,5 @@ __pycache__/
 .ruff_cache/
 project-context/
 progress-tracker/
-apps\api-gateway\tests
+apps/api-gateway/tests/
 BUILD_PLAN_30_DAYS.md
