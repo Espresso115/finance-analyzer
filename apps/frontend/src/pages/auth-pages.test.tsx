@@ -4,9 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { LoginPage } from './LoginPage';
 import { RegisterPage } from './RegisterPage';
 import { ProtectedRoute } from '../routes/ProtectedRoute';
+import { loginSchema, registerSchema } from '../schemas/auth';
 import { useAuthStore } from '../store/authStore';
 
-describe('Week 1 auth UI', () => {
+describe('Auth UI', () => {
   it('renders the login form', () => {
     const html = renderToString(
       <MemoryRouter>
@@ -49,5 +50,23 @@ describe('Week 1 auth UI', () => {
     );
 
     expect(html).not.toContain('Private area');
+  });
+
+  it('validates email and password formats with regex-backed schemas', () => {
+    expect(loginSchema.safeParse({ email: 'bad-email', password: 'password123' }).success).toBe(
+      false
+    );
+    expect(loginSchema.safeParse({ email: 'user@example.com', password: 'password' }).success).toBe(
+      false
+    );
+    expect(
+      registerSchema.safeParse({
+        email: 'user@example.com',
+        username: 'marketuser',
+        password: 'password123',
+        confirmPassword: 'password123',
+        acceptedTerms: true
+      }).success
+    ).toBe(true);
   });
 });

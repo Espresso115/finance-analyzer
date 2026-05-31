@@ -11,7 +11,7 @@ export const openApiSpec = {
   tags: [
     { name: 'Auth', description: 'Authentication and token lifecycle' },
     { name: 'Users', description: 'Profiles, settings, passwords, avatars, and API keys' },
-    { name: 'Market', description: 'Protected market quote endpoints' }
+    { name: 'Market', description: 'Protected market search, quotes, history, and export endpoints' }
   ],
   paths: {
     '/api/v1/auth/register': {
@@ -123,6 +123,51 @@ export const openApiSpec = {
         security: [{ bearerAuth: [] }],
         parameters: [{ name: 'symbol', in: 'path', required: true, schema: { type: 'string' } }],
         responses: { 200: { description: 'Quote data with cache metadata' } }
+      }
+    },
+    '/api/v1/market/search': {
+      get: {
+        tags: ['Market'],
+        summary: 'Search supported stock, crypto, and forex instruments',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'q', in: 'query', required: false, schema: { type: 'string' } },
+          { name: 'type', in: 'query', required: false, schema: { type: 'string', enum: ['stock', 'crypto', 'forex'] } }
+        ],
+        responses: { 200: { description: 'Matching market instruments' } }
+      }
+    },
+    '/api/v1/market/summary': {
+      get: {
+        tags: ['Market'],
+        summary: 'Get quotes for a comma-separated symbol list',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'symbols', in: 'query', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Quote summaries' } }
+      }
+    },
+    '/api/v1/market/history/{symbol}': {
+      get: {
+        tags: ['Market'],
+        summary: 'Get mock historical close data for charting',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'symbol', in: 'path', required: true, schema: { type: 'string' } },
+          { name: 'range', in: 'query', required: false, schema: { type: 'string', enum: ['7d', '30d', '90d'] } }
+        ],
+        responses: { 200: { description: 'Historical price points' } }
+      }
+    },
+    '/api/v1/market/export': {
+      get: {
+        tags: ['Market'],
+        summary: 'Export quote summaries as JSON or CSV',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'symbols', in: 'query', required: true, schema: { type: 'string' } },
+          { name: 'format', in: 'query', required: false, schema: { type: 'string', enum: ['json', 'csv'] } }
+        ],
+        responses: { 200: { description: 'Market export payload' } }
       }
     }
   },

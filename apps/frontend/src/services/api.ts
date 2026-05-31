@@ -6,6 +6,13 @@ import type {
   SettingsResponse,
   UserResponse
 } from '../types/user';
+import type {
+  AssetType,
+  MarketDataResponse,
+  MarketHistory,
+  MarketInstrument,
+  MarketQuote
+} from '../types/market';
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -158,6 +165,62 @@ export const userApi = {
     const { data } = await apiClient.delete<{ success: boolean; message: string }>(
       `/api/v1/users/api-keys/${keyId}`
     );
+    return data;
+  }
+};
+
+export const marketApi = {
+  async search(params: { q?: string; type?: AssetType } = {}) {
+    const { data } = await apiClient.get<MarketDataResponse<MarketInstrument[]>>(
+      '/api/v1/market/search',
+      { params }
+    );
+    return data;
+  },
+
+  async getQuote(symbol: string) {
+    const { data } = await apiClient.get<MarketDataResponse<MarketQuote>>(
+      `/api/v1/market/quote/${encodeURIComponent(symbol)}`
+    );
+    return data;
+  },
+
+  async getSummary(symbols: string[]) {
+    const { data } = await apiClient.get<MarketDataResponse<MarketQuote[]>>(
+      '/api/v1/market/summary',
+      {
+        params: {
+          symbols: symbols.join(',')
+        }
+      }
+    );
+    return data;
+  },
+
+  async getHistory(symbol: string, range: MarketHistory['range'] = '30d') {
+    const { data } = await apiClient.get<MarketDataResponse<MarketHistory>>(
+      `/api/v1/market/history/${encodeURIComponent(symbol)}`,
+      { params: { range } }
+    );
+    return data;
+  },
+
+  getExportUrl(symbols: string[], format: 'json' | 'csv' = 'csv') {
+    const searchParams = new URLSearchParams({
+      symbols: symbols.join(','),
+      format
+    });
+    return `${API_BASE_URL}/api/v1/market/export?${searchParams.toString()}`;
+  },
+
+  async exportCsv(symbols: string[]) {
+    const { data } = await apiClient.get<string>('/api/v1/market/export', {
+      params: {
+        symbols: symbols.join(','),
+        format: 'csv'
+      },
+      responseType: 'text'
+    });
     return data;
   }
 };

@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { passwordRegex } from '../schemas/auth';
 import { getApiErrorMessage, userApi } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import type { UserPreferences } from '../types/auth';
@@ -49,6 +50,11 @@ export function SettingsPage() {
     event.preventDefault();
     setPasswordMessage('');
     setPasswordError('');
+    if (!passwordRegex.test(newPassword)) {
+      setPasswordError('Use 8+ characters with at least one letter, one number, and no spaces.');
+      return;
+    }
+
     try {
       await userApi.changePassword({ currentPassword, newPassword });
       setCurrentPassword('');

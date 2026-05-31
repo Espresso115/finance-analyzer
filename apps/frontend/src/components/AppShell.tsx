@@ -7,8 +7,8 @@ export function AppShell({ children }: PropsWithChildren) {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <span className="eyebrow">Financial AI</span>
-          <h1>Workspace</h1>
+          <span className="brand-mark">Financial Platform</span>
+          <h1>Market workspace</h1>
         </div>
         <UserMenu />
       </header>

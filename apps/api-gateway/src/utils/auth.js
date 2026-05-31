@@ -20,6 +20,14 @@ export const validatePasswordStrength = (password) => {
     return 'Password must be at least 8 characters long';
   }
 
+  if (/\s/.test(password)) {
+    return 'Password must not contain spaces';
+  }
+
+  if (!/[A-Za-z]/.test(password)) {
+    return 'Password must contain at least one letter';
+  }
+
   if (!/\d/.test(password)) {
     return 'Password must contain at least one number';
   }

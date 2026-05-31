@@ -8,7 +8,7 @@ import {
   verifyRefreshToken
 } from '../utils/auth.js';
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/;
 
 const serializeUser = (user) => ({
   id: user._id,
@@ -35,7 +35,9 @@ const buildAuthPayload = (user) => {
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const username = String(req.body.username || '').trim();
+    const { password } = req.body;
 
     if (!email || !username || !password) {
       return res.status(400).json({ error: 'Please provide email, username and password' });
@@ -85,10 +87,15 @@ export const register = async (req, res) => {
 // @access  Public
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const { password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Please provide email and password' });
+    }
+
+    if (!emailPattern.test(email)) {
+      return res.status(422).json({ error: 'Please provide a valid email address' });
     }
 
     // Check for user

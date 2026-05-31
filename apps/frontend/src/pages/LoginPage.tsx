@@ -29,15 +29,11 @@ export function LoginPage() {
   });
 
   return (
-    <AuthLayout
-      eyebrow="Week 1 Auth"
-      title="Financial AI Analyzer"
-      subtitle="Sign in to your secure analysis workspace."
-    >
+    <AuthLayout>
       <form className="auth-form" onSubmit={onSubmit}>
         <div className="form-header">
           <h2>Welcome back</h2>
-          <p>Use your registered email and password.</p>
+          <p>Sign in to continue to your market workspace.</p>
         </div>
 
         <label>

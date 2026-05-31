@@ -1,33 +1,18 @@
 import type { PropsWithChildren } from 'react';
 
-type AuthLayoutProps = PropsWithChildren<{
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-}>;
+type AuthLayoutProps = PropsWithChildren;
 
-export function AuthLayout({ eyebrow, title, subtitle, children }: AuthLayoutProps) {
+export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <main className="auth-page">
-      <section className="auth-copy" aria-labelledby="auth-title">
-        <span className="eyebrow">{eyebrow}</span>
-        <h1 id="auth-title">{title}</h1>
-        <p>{subtitle}</p>
-        <div className="auth-metrics" aria-label="Platform readiness metrics">
-          <div>
-            <strong>Market</strong>
-            <span>Live workspace</span>
-          </div>
-          <div>
-            <strong>Research</strong>
-            <span>Document queue</span>
-          </div>
-          <div>
-            <strong>Analysis</strong>
-            <span>Protected session</span>
-          </div>
+      <nav className="auth-nav" aria-label="Authentication navigation">
+        <span className="brand-mark">Financial Platform</span>
+        <div>
+          <span>Markets</span>
+          <span>Research</span>
+          <span>Security</span>
         </div>
-      </section>
+      </nav>
       <section className="auth-panel">{children}</section>
     </main>
   );

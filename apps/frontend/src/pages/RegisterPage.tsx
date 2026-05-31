@@ -37,15 +37,11 @@ export function RegisterPage() {
   });
 
   return (
-    <AuthLayout
-      eyebrow="Create Access"
-      title="Financial AI Analyzer"
-      subtitle="Open a protected workspace for market research and AI analysis."
-    >
+    <AuthLayout>
       <form className="auth-form" onSubmit={onSubmit}>
         <div className="form-header">
           <h2>Create account</h2>
-          <p>Start with a username, email, and password.</p>
+          <p>Set up secure access to your market workspace.</p>
         </div>
 
         <label>
