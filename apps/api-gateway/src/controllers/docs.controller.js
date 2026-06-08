@@ -4,14 +4,16 @@ export const openApiSpec = {
   openapi: '3.0.3',
   info: {
     title: 'Financial AI Platform API',
-    version: '0.2.0',
-    description: 'API Gateway contract for authentication, user management, API keys, and market data.'
+    version: '0.3.0',
+    description: 'API Gateway contract for authentication, user management, market data, document management, and retrieval analysis.'
   },
   servers: [{ url: serverUrl }],
   tags: [
     { name: 'Auth', description: 'Authentication and token lifecycle' },
     { name: 'Users', description: 'Profiles, settings, passwords, avatars, and API keys' },
-    { name: 'Market', description: 'Protected market search, quotes, history, and export endpoints' }
+    { name: 'Market', description: 'Protected market search, quotes, history, and export endpoints' },
+    { name: 'Documents', description: 'Protected document upload, metadata, and search endpoints' },
+    { name: 'Analysis', description: 'Protected retrieval analysis and history endpoints' }
   ],
   paths: {
     '/api/v1/auth/register': {
@@ -168,6 +170,111 @@ export const openApiSpec = {
           { name: 'format', in: 'query', required: false, schema: { type: 'string', enum: ['json', 'csv'] } }
         ],
         responses: { 200: { description: 'Market export payload' } }
+      }
+    },
+    '/api/v1/documents': {
+      get: {
+        tags: ['Documents'],
+        summary: 'List uploaded documents for the current user',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'status', in: 'query', required: false, schema: { type: 'string', enum: ['pending', 'processing', 'completed', 'error'] } },
+          { name: 'limit', in: 'query', required: false, schema: { type: 'integer' } },
+          { name: 'offset', in: 'query', required: false, schema: { type: 'integer' } }
+        ],
+        responses: { 200: { description: 'Paginated document metadata' } }
+      }
+    },
+    '/api/v1/documents/upload': {
+      post: {
+        tags: ['Documents'],
+        summary: 'Upload one or more documents',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  documents: { type: 'array', items: { type: 'string', format: 'binary' } },
+                  description: { type: 'string' },
+                  tags: { type: 'string', description: 'Comma-separated tags' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          201: { description: 'Document metadata created' },
+          422: { description: 'Unsupported document type or oversized upload' }
+        }
+      }
+    },
+    '/api/v1/documents/search': {
+      post: {
+        tags: ['Documents'],
+        summary: 'Search uploaded documents by filename, tags, or extracted text',
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: 'Matching document metadata' } }
+      }
+    },
+    '/api/v1/documents/{documentId}': {
+      get: {
+        tags: ['Documents'],
+        summary: 'Get document details and extracted text',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'documentId', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Document detail' }, 404: { description: 'Document not found' } }
+      },
+      put: {
+        tags: ['Documents'],
+        summary: 'Update document metadata',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'documentId', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Document metadata updated' } }
+      },
+      delete: {
+        tags: ['Documents'],
+        summary: 'Soft delete a document',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'documentId', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Document deleted' } }
+      }
+    },
+    '/api/v1/analysis/query': {
+      post: {
+        tags: ['Analysis'],
+        summary: 'Run retrieval analysis over uploaded documents',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          201: { description: 'Analysis generated and saved' },
+          400: { description: 'Missing analysis query' }
+        }
+      }
+    },
+    '/api/v1/analysis/history': {
+      get: {
+        tags: ['Analysis'],
+        summary: 'List prior analysis runs',
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: 'Analysis history' } }
+      }
+    },
+    '/api/v1/analysis/{analysisId}': {
+      get: {
+        tags: ['Analysis'],
+        summary: 'Get an analysis result',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'analysisId', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Analysis detail' }, 404: { description: 'Analysis not found' } }
+      },
+      delete: {
+        tags: ['Analysis'],
+        summary: 'Delete an analysis result',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'analysisId', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Analysis deleted' } }
       }
     }
   },

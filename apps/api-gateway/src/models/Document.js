@@ -26,14 +26,55 @@ const DocumentSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  description: {
+    type: String,
+    default: ''
+  },
+  tags: {
+    type: [String],
+    default: []
+  },
   status: {
     type: String,
     enum: ['pending', 'processing', 'completed', 'error'],
     default: 'pending'
+  },
+  extractedText: {
+    type: String,
+    default: ''
+  },
+  textPreview: {
+    type: String,
+    default: ''
+  },
+  chunkCount: {
+    type: Number,
+    default: 0
+  },
+  parseMetadata: {
+    parser: { type: String, default: 'pending' },
+    contentType: { type: String, default: '' },
+    wordCount: { type: Number, default: 0 }
+  },
+  errorMessage: {
+    type: String,
+    default: ''
+  },
+  processedAt: {
+    type: Date,
+    default: null
+  },
+  deletedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true
 });
+
+DocumentSchema.index({ userId: 1, createdAt: -1 });
+DocumentSchema.index({ userId: 1, status: 1 });
+DocumentSchema.index({ originalName: 'text', extractedText: 'text', tags: 'text' });
 
 const Document = mongoose.model('Document', DocumentSchema);
 

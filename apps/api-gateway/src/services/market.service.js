@@ -1,3 +1,4 @@
+import yahooFinance from 'yahoo-finance2';
 import redisClient from '../config/redis.js';
 
 const CACHE_TTL = 60; // 60 seconds
@@ -21,6 +22,16 @@ const INSTRUMENTS = [
   { symbol: 'USDJPY', name: 'US Dollar / Japanese Yen', type: 'forex', exchange: 'FX', currency: 'JPY', basePrice: 156.8 }
 ];
 
+// Map forex symbols to Yahoo Finance format (EURUSD -> EURUSD=X)
+const toYahooSymbol = (symbol) => {
+  const normalized = normalizeSymbol(symbol);
+  const instrument = INSTRUMENTS.find((i) => i.symbol === normalized);
+  if (instrument && instrument.type === 'forex') {
+    return `${normalized}=X`;
+  }
+  return normalized;
+};
+
 const SYMBOL_PATTERN = /^[A-Z0-9.-]{1,12}$/;
 const RANGE_DAYS = {
   '7d': 7,
@@ -39,12 +50,14 @@ const getInstrument = (symbol) => {
       symbol: normalizedSymbol,
       name: `${normalizedSymbol} Market Instrument`,
       type: 'stock',
-      exchange: 'Mock',
+      exchange: 'Unknown',
       currency: 'USD',
       basePrice: 100
     }
   );
 };
+
+// ── Simulated fallback (used when Yahoo Finance is unreachable) ──────────────
 
 const seededNoise = (seed, amplitude = 1) => {
   const x = Math.sin(seed) * 10000;
@@ -56,7 +69,7 @@ const getSymbolSeed = (symbol) =>
     .split('')
     .reduce((total, character) => total + character.charCodeAt(0), 0);
 
-const buildQuote = (symbol) => {
+const buildSimulatedQuote = (symbol) => {
   const instrument = getInstrument(symbol);
   const seed = getSymbolSeed(instrument.symbol);
   const minuteBucket = Math.floor(Date.now() / 60000);
@@ -76,35 +89,115 @@ const buildQuote = (symbol) => {
     change,
     changePercent,
     volume: Math.floor(Math.abs(seededNoise(seed + minuteBucket, 1)) * 1200000) + 50000,
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
+    source: 'simulated'
   };
 };
+
+const buildSimulatedHistory = (symbol, range) => {
+  const instrument = getInstrument(symbol);
+  const days = RANGE_DAYS[range] || 30;
+  const seed = getSymbolSeed(instrument.symbol);
+  const now = new Date();
+  return Array.from({ length: days }, (_, index) => {
+    const pointDate = new Date(now);
+    pointDate.setDate(now.getDate() - (days - index - 1));
+    const trend = (index - days / 2) * instrument.basePrice * 0.0018;
+    const wave = Math.sin((index + seed) / 3) * instrument.basePrice * 0.018;
+    const noise = seededNoise(seed + index, instrument.basePrice * 0.012);
+    const close = Number(
+      Math.max(0.01, instrument.basePrice + trend + wave + noise).toFixed(
+        instrument.type === 'forex' ? 4 : 2
+      )
+    );
+    return {
+      date: pointDate.toISOString().slice(0, 10),
+      close,
+      volume: Math.floor(Math.abs(seededNoise(seed + index + 13, 1)) * 900000) + 40000
+    };
+  });
+};
+
+// ── Yahoo Finance: real data fetching ────────────────────────────────────────
+
+const buildRealQuote = async (symbol) => {
+  const instrument = getInstrument(symbol);
+  const yahooSym = toYahooSymbol(symbol);
+
+  const result = await yahooFinance.quote(yahooSym);
+
+  const price = result.regularMarketPrice ?? 0;
+  const change = result.regularMarketChange ?? 0;
+  const changePercent = result.regularMarketChangePercent ?? 0;
+
+  return {
+    symbol: instrument.symbol,
+    name: result.shortName || result.longName || instrument.name,
+    type: instrument.type,
+    exchange: result.exchange || instrument.exchange,
+    currency: result.currency || instrument.currency,
+    price: Number(price.toFixed(instrument.type === 'forex' ? 4 : 2)),
+    change: Number(change.toFixed(instrument.type === 'forex' ? 4 : 2)),
+    changePercent: Number(changePercent.toFixed(2)),
+    volume: result.regularMarketVolume ?? 0,
+    lastUpdated: new Date().toISOString(),
+    source: 'yahoo'
+  };
+};
+
+const buildRealHistory = async (symbol, range) => {
+  const yahooSym = toYahooSymbol(symbol);
+  const days = RANGE_DAYS[range] || 30;
+
+  const period1 = new Date();
+  period1.setDate(period1.getDate() - days);
+
+  const result = await yahooFinance.chart(yahooSym, {
+    period1: period1.toISOString().slice(0, 10),
+    interval: '1d'
+  });
+
+  const quotes = result.quotes || [];
+  return quotes
+    .filter((q) => q.close != null)
+    .map((q) => ({
+      date: new Date(q.date).toISOString().slice(0, 10),
+      close: Number(q.close.toFixed(2)),
+      volume: q.volume ?? 0
+    }));
+};
+
+// ── Public API (with cache + graceful fallback) ──────────────────────────────
 
 export const fetchMarketQuote = async (symbol) => {
   const normalizedSymbol = normalizeSymbol(symbol);
   const cacheKey = `market:quote:${normalizedSymbol}`;
 
-  // 1. Try reading from cache if Redis is connected
+  // 1. Try cache
   if (redisClient.isOpen) {
     try {
       const cachedData = await redisClient.get(cacheKey);
       if (cachedData) {
         console.log(`Cache HIT for symbol: ${normalizedSymbol}`);
-        return {
-          ...JSON.parse(cachedData),
-          cached: true
-        };
+        return { ...JSON.parse(cachedData), cached: true };
       }
     } catch (err) {
       console.error(`Redis cache read error: ${err.message}`);
     }
   }
 
-  // 2. Cache miss: Fetch/generate market data
+  // 2. Try Yahoo Finance, fall back to simulated
   console.log(`Cache MISS for symbol: ${normalizedSymbol}`);
-  const quoteData = buildQuote(normalizedSymbol);
+  let quoteData;
+  try {
+    quoteData = await buildRealQuote(normalizedSymbol);
+    console.log(`Yahoo Finance OK for: ${normalizedSymbol}`);
+  } catch (err) {
+    console.warn(`Yahoo Finance failed for ${normalizedSymbol}: ${err.message}. Using simulated data.`);
+    quoteData = buildSimulatedQuote(normalizedSymbol);
+  }
 
-  // 3. Store in Redis cache if Redis is connected
+  // 3. Cache result
   if (redisClient.isOpen) {
     try {
       await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(quoteData));
@@ -113,10 +206,7 @@ export const fetchMarketQuote = async (symbol) => {
     }
   }
 
-  return {
-    ...quoteData,
-    cached: false
-  };
+  return { ...quoteData, cached: false };
 };
 
 export const searchMarketInstruments = ({ query = '', type } = {}) => {
@@ -155,29 +245,16 @@ export const fetchMarketHistory = async (symbol, range = '30d') => {
     }
   }
 
-  const instrument = getInstrument(normalizedSymbol);
-  const days = RANGE_DAYS[normalizedRange];
-  const seed = getSymbolSeed(normalizedSymbol);
-  const now = new Date();
-  const points = Array.from({ length: days }, (_, index) => {
-    const pointDate = new Date(now);
-    pointDate.setDate(now.getDate() - (days - index - 1));
-
-    const trend = (index - days / 2) * instrument.basePrice * 0.0018;
-    const wave = Math.sin((index + seed) / 3) * instrument.basePrice * 0.018;
-    const noise = seededNoise(seed + index, instrument.basePrice * 0.012);
-    const close = Number(
-      Math.max(0.01, instrument.basePrice + trend + wave + noise).toFixed(
-        instrument.type === 'forex' ? 4 : 2
-      )
-    );
-
-    return {
-      date: pointDate.toISOString().slice(0, 10),
-      close,
-      volume: Math.floor(Math.abs(seededNoise(seed + index + 13, 1)) * 900000) + 40000
-    };
-  });
+  // Try Yahoo Finance, fall back to simulated
+  let points;
+  try {
+    points = await buildRealHistory(normalizedSymbol, normalizedRange);
+    if (!points.length) throw new Error('Empty history');
+    console.log(`Yahoo Finance history OK for: ${normalizedSymbol} (${normalizedRange})`);
+  } catch (err) {
+    console.warn(`Yahoo Finance history failed for ${normalizedSymbol}: ${err.message}. Using simulated.`);
+    points = buildSimulatedHistory(normalizedSymbol, normalizedRange);
+  }
 
   if (redisClient.isOpen) {
     try {

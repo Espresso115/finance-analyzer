@@ -7,8 +7,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import connectDB from "./config/database.js";
 import { API_PREFIX } from "./config/app.js";
+import analysisRoutes from "./routes/analysis.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import docsRoutes from "./routes/docs.routes.js";
+import documentRoutes from "./routes/document.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import marketRoutes from "./routes/market.routes.js";
 import redisClient from "./config/redis.js";
@@ -24,6 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadRoot = path.resolve(__dirname, "..", "uploads");
 fs.mkdirSync(path.join(uploadRoot, "avatars"), { recursive: true });
+fs.mkdirSync(path.join(uploadRoot, "documents"), { recursive: true });
 
 app.use(cors());
 app.use(requestId);
@@ -34,6 +37,8 @@ app.use('/uploads', express.static(uploadRoot));
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/market`, marketRoutes);
+app.use(`${API_PREFIX}/documents`, documentRoutes);
+app.use(`${API_PREFIX}/analysis`, analysisRoutes);
 app.use(`${API_PREFIX}/docs`, docsRoutes);
 
 
