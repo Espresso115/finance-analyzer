@@ -209,19 +209,51 @@ export const fetchMarketQuote = async (symbol) => {
   return { ...quoteData, cached: false };
 };
 
-export const searchMarketInstruments = ({ query = '', type } = {}) => {
+export const searchMarketInstruments = async ({ query = '', type } = {}) => {
   const normalizedQuery = String(query).trim().toUpperCase();
   const normalizedType = String(type || '').trim().toLowerCase();
 
-  return INSTRUMENTS.filter((instrument) => {
-    const matchesType = !normalizedType || instrument.type === normalizedType;
-    const matchesQuery =
-      !normalizedQuery ||
-      instrument.symbol.includes(normalizedQuery) ||
-      instrument.name.toUpperCase().includes(normalizedQuery);
+  let results = [];
 
-    return matchesType && matchesQuery;
-  }).slice(0, 12);
+  try {
+    if (normalizedQuery) {
+      const response = await fetch(`https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(normalizedQuery)}&quotesCount=15`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.quotes) {
+          results = data.quotes
+            .filter(q => q.symbol)
+            .map(q => ({
+              symbol: q.symbol,
+              name: q.shortname || q.longname || q.symbol,
+              type: q.quoteType === 'CRYPTOCURRENCY' ? 'crypto' : (q.quoteType === 'CURRENCY' ? 'forex' : 'stock'),
+              exchange: q.exchDisp || q.exchange || 'Unknown',
+            }));
+        }
+      } else {
+        console.warn('Yahoo search fetch failed with status:', response.status);
+      }
+    }
+  } catch (error) {
+    console.error('Yahoo search error:', error);
+  }
+
+  if (results.length === 0) {
+    results = INSTRUMENTS.filter((instrument) => {
+      const matchesType = !normalizedType || instrument.type === normalizedType;
+      const matchesQuery =
+        !normalizedQuery ||
+        instrument.symbol.includes(normalizedQuery) ||
+        instrument.name.toUpperCase().includes(normalizedQuery);
+      return matchesType && matchesQuery;
+    });
+  }
+
+  if (normalizedType) {
+    results = results.filter(r => r.type === normalizedType);
+  }
+
+  return results.slice(0, 12);
 };
 
 export const fetchMarketHistory = async (symbol, range = '30d') => {

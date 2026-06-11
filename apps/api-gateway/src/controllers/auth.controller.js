@@ -87,19 +87,20 @@ export const register = async (req, res) => {
 // @access  Public
 export const login = async (req, res) => {
   try {
-    const email = String(req.body.email || '').trim().toLowerCase();
+    const identifier = String(req.body.email || req.body.identifier || '').trim();
     const { password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Please provide email and password' });
-    }
-
-    if (!emailPattern.test(email)) {
-      return res.status(422).json({ error: 'Please provide a valid email address' });
+    if (!identifier || !password) {
+      return res.status(400).json({ error: 'Please provide email/username and password' });
     }
 
     // Check for user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase() },
+        { username: identifier }
+      ]
+    });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }

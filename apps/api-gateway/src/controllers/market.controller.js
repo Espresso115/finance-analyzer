@@ -49,7 +49,7 @@ export const searchMarket = async (req, res) => {
     return res.status(422).json({ error: 'Search query must be 40 characters or fewer' });
   }
 
-  const instruments = searchMarketInstruments({ query, type });
+  const instruments = await searchMarketInstruments({ query, type });
   res.json({
     success: true,
     data: instruments

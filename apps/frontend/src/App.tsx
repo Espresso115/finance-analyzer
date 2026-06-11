@@ -7,6 +7,7 @@ import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { SymbolPage } from './pages/SymbolPage';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { useAuthStore } from './store/authStore';
 
@@ -27,6 +28,8 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/api-keys" element={<ApiKeysPage />} />
+        <Route path="/symbol/:symbol" element={<SymbolPage />} />
+        <Route path="/symbol" element={<SymbolPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

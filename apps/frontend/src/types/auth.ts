@@ -2,9 +2,9 @@ export type UserRole = 'user' | 'analyst' | 'admin';
 
 export type UserPreferences = {
   theme: 'light' | 'dark' | 'system';
-  notificationsEnabled: boolean;
-  marketAlertsEnabled: boolean;
-  defaultWatchlist: string[];
+  notificationsEnabled?: boolean;
+  marketAlertsEnabled?: boolean;
+  defaultWatchlist?: string[];
 };
 
 export type UserProfile = {
@@ -34,10 +34,13 @@ export type AuthResponse = {
 };
 
 export type LoginPayload = {
-  email: string;
+  identifier?: string;
+  email?: string;
   password: string;
 };
 
-export type RegisterPayload = LoginPayload & {
+export type RegisterPayload = {
+  email: string;
   username: string;
+  password: string;
 };
