@@ -10,7 +10,7 @@ export const loginSchema = z.object({
     .min(1, 'Email or username is required'),
   password: z
     .string()
-    .regex(passwordRegex, 'Use 8+ characters with at least one letter and one number')
+    .min(1, 'Password is required')
 });
 
 export const registerSchema = z.object({

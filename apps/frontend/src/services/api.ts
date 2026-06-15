@@ -166,6 +166,13 @@ export const userApi = {
       `/api/v1/users/api-keys/${keyId}`
     );
     return data;
+  },
+
+  async deleteAccount(password: string) {
+    const { data } = await apiClient.delete<{ success: boolean; message: string }>('/api/v1/users/me', {
+      data: { password }
+    });
+    return data;
   }
 };
 
