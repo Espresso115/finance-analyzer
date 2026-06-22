@@ -6,13 +6,15 @@ import {
   User,
   Settings,
   Key,
-  Activity,
   ChevronLeft,
   ChevronRight,
   Menu,
   X,
   LogOut,
   Bell,
+  FileText,
+  MessageSquareText,
+  LineChart,
 } from 'lucide-react';
 import { SymbolSearch } from './SymbolSearch';
 import { cn } from '@/lib/utils';
@@ -24,6 +26,8 @@ import { Separator } from '@/components/ui/separator';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/documents', icon: FileText, label: 'Documents' },
+  { to: '/analysis', icon: MessageSquareText, label: 'Analysis' },
   { to: '/profile', icon: User, label: 'Profile' },
   { to: '/settings', icon: Settings, label: 'Settings' },
   { to: '/api-keys', icon: Key, label: 'API Keys' },
@@ -31,6 +35,8 @@ const NAV_ITEMS = [
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Market Dashboard',
+  '/documents': 'Document Management',
+  '/analysis': 'AI Analysis',
   '/profile': 'Profile',
   '/settings': 'Settings',
   '/api-keys': 'API Keys',
@@ -55,39 +61,28 @@ function SidebarNavLink({
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          'relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group w-full',
+          'relative flex items-center gap-3 px-3 py-2 text-[13px] font-medium transition-all duration-150 group w-full outline-none',
           isActive
-            ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+            ? 'bg-primary/10 text-primary border-l-2 border-primary'
+            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50 border-l-2 border-transparent'
         )
       }
     >
-      {({ isActive }) => (
-        <>
-          {isActive && (
-            <motion.span
-              layoutId="sidebar-active-pill"
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r-full"
-              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-            />
-          )}
-          <Icon className="w-[18px] h-[18px] flex-shrink-0" />
-          <AnimatePresence initial={false}>
-            {!collapsed && (
-              <motion.span
-                key="label"
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
-                className="whitespace-nowrap overflow-hidden"
-              >
-                {label}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </>
-      )}
+      <Icon className="w-4 h-4 flex-shrink-0" />
+      <AnimatePresence initial={false}>
+        {!collapsed && (
+          <motion.span
+            key="label"
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="whitespace-nowrap overflow-hidden"
+          >
+            {label}
+          </motion.span>
+        )}
+      </AnimatePresence>
     </NavLink>
   );
 
@@ -95,7 +90,7 @@ function SidebarNavLink({
     return (
       <Tooltip>
         <TooltipTrigger asChild>{content}</TooltipTrigger>
-        <TooltipContent side="right">{label}</TooltipContent>
+        <TooltipContent side="right" className="text-xs">{label}</TooltipContent>
       </Tooltip>
     );
   }
@@ -132,15 +127,15 @@ export function AppShell({ children }: PropsWithChildren) {
     .toUpperCase();
 
   const pageTitle = PAGE_TITLES[location.pathname] ?? 'Financial Platform';
-  const sidebarWidth = collapsed ? 64 : 240;
+  const sidebarWidth = collapsed ? 60 : 220;
 
   const SidebarContent = ({ onNavClick }: { onNavClick?: () => void }) => (
     <>
       {/* Logo */}
-      <div className="flex items-center h-16 px-4 border-b border-border/50 flex-shrink-0">
+      <div className="flex items-center h-12 px-4 border-b border-border flex-shrink-0 bg-card">
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/15 flex-shrink-0">
-            <Activity className="w-4.5 h-4.5 text-primary" />
+          <div className="flex items-center justify-center w-6 h-6 rounded bg-primary/10 border border-primary/20 flex-shrink-0">
+            <LineChart className="w-3.5 h-3.5 text-primary" />
           </div>
           <AnimatePresence initial={false}>
             {!collapsed && (
@@ -152,7 +147,7 @@ export function AppShell({ children }: PropsWithChildren) {
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <span className="font-bold text-foreground whitespace-nowrap tracking-tight">
+                <span className="font-bold text-sm text-foreground whitespace-nowrap tracking-tight">
                   Finance<span className="text-primary">AI</span>
                 </span>
               </motion.div>
@@ -162,7 +157,7 @@ export function AppShell({ children }: PropsWithChildren) {
       </div>
 
       {/* Nav links */}
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 py-3 flex flex-col gap-0.5 overflow-y-auto">
         {NAV_ITEMS.map(({ to, icon, label }) => (
           <SidebarNavLink
             key={to}
@@ -175,19 +170,18 @@ export function AppShell({ children }: PropsWithChildren) {
         ))}
       </nav>
 
-      {/* Divider */}
-      <Separator className="mx-3 w-auto" />
+      <Separator className="w-full bg-border" />
 
       {/* User section */}
-      <div className="p-3 flex-shrink-0">
+      <div className="p-2 flex-shrink-0 bg-card/50">
         <div
           className={cn(
-            'flex items-center gap-2.5 px-2 py-2 rounded-lg',
+            'flex items-center gap-2 px-2 py-2 rounded-sm',
             collapsed ? 'justify-center' : ''
           )}
         >
-          <Avatar className="w-7 h-7 flex-shrink-0">
-            <AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold">
+          <Avatar className="w-6 h-6 flex-shrink-0 rounded-sm">
+            <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-bold rounded-sm border border-primary/20">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -201,10 +195,10 @@ export function AppShell({ children }: PropsWithChildren) {
                 transition={{ duration: 0.2 }}
                 className="flex-1 min-w-0 overflow-hidden"
               >
-                <p className="text-xs font-semibold truncate text-foreground">
+                <p className="text-xs font-semibold truncate text-foreground leading-none">
                   {user?.username ?? 'User'}
                 </p>
-                <p className="text-[10px] text-muted-foreground truncate">
+                <p className="text-[10px] text-muted-foreground truncate mt-1 leading-none">
                   {user?.email}
                 </p>
               </motion.div>
@@ -219,7 +213,7 @@ export function AppShell({ children }: PropsWithChildren) {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.15 }}
                 onClick={handleLogout}
-                className="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors p-1 rounded-md hover:bg-destructive/10"
+                className="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors p-1 rounded hover:bg-destructive/10"
                 title="Sign out"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -233,12 +227,12 @@ export function AppShell({ children }: PropsWithChildren) {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="min-h-screen bg-background flex">
+      <div className="min-h-screen bg-background flex text-foreground selection:bg-primary/30">
         {/* ── Desktop Sidebar ──────────────────── */}
         <motion.aside
-          className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-card/95 border-r border-border/60 backdrop-blur-xl"
+          className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 bg-card border-r border-border"
           animate={{ width: sidebarWidth }}
-          transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
         >
           <div className="flex flex-col h-full w-full overflow-hidden">
             <SidebarContent />
@@ -246,15 +240,13 @@ export function AppShell({ children }: PropsWithChildren) {
 
           {/* Collapse toggle */}
           <motion.button
-            className="absolute -right-3.5 top-14 z-50 w-7 h-7 bg-primary border-2 border-background rounded-full flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg"
+            className="absolute -right-2.5 top-14 z-50 w-5 h-5 bg-secondary border border-border rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors shadow-sm"
             onClick={() => setCollapsed((c) => !c)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
           >
             {collapsed ? (
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-3 h-3" />
             ) : (
-              <ChevronLeft className="w-3.5 h-3.5" />
+              <ChevronLeft className="w-3 h-3" />
             )}
           </motion.button>
         </motion.aside>
@@ -264,22 +256,22 @@ export function AppShell({ children }: PropsWithChildren) {
           {mobileOpen && (
             <>
               <motion.div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+                className="fixed inset-0 bg-black/60 z-40 md:hidden"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setMobileOpen(false)}
               />
               <motion.aside
-                className="fixed left-0 top-0 bottom-0 w-[240px] z-50 md:hidden bg-card border-r border-border/60 flex flex-col shadow-2xl"
-                initial={{ x: -240 }}
+                className="fixed left-0 top-0 bottom-0 w-[220px] z-50 md:hidden bg-card border-r border-border flex flex-col shadow-2xl"
+                initial={{ x: -220 }}
                 animate={{ x: 0 }}
-                exit={{ x: -240 }}
-                transition={{ duration: 0.28, ease: [0.25, 0.4, 0.25, 1] }}
+                exit={{ x: -220 }}
+                transition={{ duration: 0.28, ease: "easeInOut" }}
               >
                 <SidebarContent onNavClick={() => setMobileOpen(false)} />
                 <button
-                  className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+                  className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
                   onClick={() => setMobileOpen(false)}
                 >
                   <X className="w-4 h-4" />
@@ -291,38 +283,38 @@ export function AppShell({ children }: PropsWithChildren) {
 
         {/* ── Main Content ─────────────────────── */}
         <motion.div
-          className="flex-1 flex flex-col min-h-screen"
+          className="flex-1 flex flex-col min-h-screen min-w-0"
           animate={{ marginLeft: isDesktop ? sidebarWidth : 0 }}
-          transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
         >
           {/* Top header */}
-          <header className="h-14 border-b border-border/50 bg-card/60 backdrop-blur-xl sticky top-0 z-30 flex items-center px-4 md:px-6 gap-4">
+          <header className="h-12 border-b border-border bg-card sticky top-0 z-30 flex items-center px-4 gap-4">
             {/* Mobile hamburger */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden h-8 w-8 text-muted-foreground"
+              className="md:hidden h-7 w-7 text-muted-foreground rounded-sm"
               onClick={() => setMobileOpen(true)}
             >
               <Menu className="w-4 h-4" />
             </Button>
 
             {/* Page title */}
-            <h1 className="hidden md:block text-sm font-semibold text-foreground">
+            <h1 className="hidden md:block text-xs font-semibold text-foreground uppercase tracking-wider text-muted-foreground">
               {pageTitle}
             </h1>
 
             {/* Symbol search — dashboard only */}
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex justify-center max-w-xl mx-auto">
               {location.pathname === '/dashboard' && <SymbolSearch />}
             </div>
 
             {/* Header actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 ml-auto">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-sm"
               >
                 <Bell className="w-4 h-4" />
               </Button>
@@ -330,7 +322,9 @@ export function AppShell({ children }: PropsWithChildren) {
           </header>
 
           {/* Page content */}
-          <main className="flex-1 p-4 md:p-6">{children}</main>
+          <main className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col max-w-[1600px] w-full mx-auto">
+            {children}
+          </main>
         </motion.div>
       </div>
     </TooltipProvider>

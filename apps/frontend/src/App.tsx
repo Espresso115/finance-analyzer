@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import './App.css';
+import { AnalysisPage } from './pages/AnalysisPage';
 import { ApiKeysPage } from './pages/ApiKeysPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { DocumentsPage } from './pages/DocumentsPage';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -41,6 +43,8 @@ function App() {
         
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
+          <Route path="/documents" element={<PageTransition><DocumentsPage /></PageTransition>} />
+          <Route path="/analysis" element={<PageTransition><AnalysisPage /></PageTransition>} />
           <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
           <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
           <Route path="/api-keys" element={<PageTransition><ApiKeysPage /></PageTransition>} />

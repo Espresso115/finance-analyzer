@@ -3,49 +3,42 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 220 33% 98%;
-    --foreground: 224 22% 12%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 22% 12%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 22% 12%;
-    --primary: 217 91% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 214 32% 95%;
-    --secondary-foreground: 224 22% 20%;
-    --muted: 214 32% 93%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 217 91% 55%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 72% 51%;
+  :root, .dark {
+    /* Backgrounds: Deep Slate/Charcoal */
+    --background: 220 18% 8%;
+    --foreground: 210 20% 96%;
+    
+    /* Surfaces */
+    --card: 220 18% 11%;
+    --card-foreground: 210 20% 96%;
+    --popover: 220 18% 11%;
+    --popover-foreground: 210 20% 96%;
+    
+    /* Accents: Lush Forest / Emerald */
+    --primary: 155 80% 42%;
+    --primary-foreground: 155 100% 10%;
+    --secondary: 220 15% 16%;
+    --secondary-foreground: 210 20% 96%;
+    
+    /* Muted elements */
+    --muted: 220 15% 16%;
+    --muted-foreground: 220 10% 60%;
+    
+    /* Accent maps to primary for highlights */
+    --accent: 155 80% 42%;
+    --accent-foreground: 155 100% 10%;
+    
+    /* System */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 89%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 55%;
-    --radius: 0.625rem;
-  }
-
-  .dark {
-    --background: 222 47% 3%;
-    --foreground: 213 31% 95%;
-    --card: 222 44% 5%;
-    --card-foreground: 213 31% 95%;
-    --popover: 222 44% 5%;
-    --popover-foreground: 213 31% 95%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 8%;
-    --secondary: 217 33% 11%;
-    --secondary-foreground: 213 31% 90%;
-    --muted: 217 33% 11%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 222 47% 8%;
-    --destructive: 0 84% 62%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 12%;
-    --input: 217 33% 10%;
-    --ring: 217 91% 60%;
+    
+    /* Borders & Inputs */
+    --border: 220 15% 18%;
+    --input: 220 15% 14%;
+    --ring: 155 80% 42%;
+    
+    /* Sharp enterprise radii */
+    --radius: 0.3rem;
   }
 }
 
@@ -66,16 +59,21 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
+  /* Custom styling for typography density */
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-semibold;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    @apply bg-background;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-border rounded-full;
+    @apply bg-border rounded-none;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/40;
@@ -83,34 +81,20 @@
 }
 
 @layer utilities {
-  /* Glassmorphism */
+  /* Solid Enterprise Surfaces */
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+    @apply bg-card border border-border shadow-sm;
   }
   .glass-strong {
-    @apply bg-card/80 backdrop-blur-2xl border border-border/60;
+    @apply bg-secondary border border-border shadow-md;
   }
 
-  /* Gradient text */
+  /* Gradient text (subtle for primary headers) */
   .gradient-text {
     @apply bg-gradient-to-br from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent;
   }
   .gradient-text-primary {
-    @apply bg-gradient-to-br from-primary via-blue-400 to-primary/70 bg-clip-text text-transparent;
-  }
-
-  /* Noise overlay */
-  .noise {
-    position: relative;
-  }
-  .noise::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    border-radius: inherit;
-    opacity: 0.4;
+    @apply bg-gradient-to-br from-primary via-[#2ee59d] to-primary/80 bg-clip-text text-transparent;
   }
 
   /* Shimmer animation for skeletons */
@@ -125,12 +109,12 @@
     animation: shimmer 1.5s infinite;
   }
 
-  /* Glow effect */
+  /* Subtle Glow effect */
   .glow-primary {
-    box-shadow: 0 0 30px -5px hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.15);
   }
   .glow-sm {
-    box-shadow: 0 0 15px -3px hsl(var(--primary) / 0.2);
+    box-shadow: 0 0 10px -3px hsl(var(--primary) / 0.1);
   }
 }
 
