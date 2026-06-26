@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Upload, FileText, CheckCircle2, Loader2, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRagStore } from '@/store/ragStore';
-import type { RAGDocument } from '@/types/rag';
+import { documentApi, getApiErrorMessage } from '@/services/api';
 
 interface NewChatModalProps {
   isOpen: boolean;
@@ -12,10 +12,12 @@ interface NewChatModalProps {
 }
 
 export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalProps) {
-  const { documents, uploadDocuments, createConversation } = useRagStore();
+  const { documents, setDocuments, uploadDocuments, createConversation } = useRagStore();
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
-  const [processingState, setProcessingState] = useState<'idle' | 'parsing' | 'chunking' | 'embedding' | 'ready'>('idle');
+  const [processingState, setProcessingState] = useState<'idle' | 'uploading' | 'indexing' | 'ready' | 'error'>('idle');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState('');
 
   // Reset state when opened
   useEffect(() => {
@@ -23,43 +25,80 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
       setStep(1);
       setSelectedDocs([]);
       setProcessingState('idle');
+      setUploadProgress(0);
+      setUploadError('');
+      documentApi.list().then(setDocuments).catch(() => undefined);
     }
-  }, [isOpen]);
+  }, [isOpen, setDocuments]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newDocs: RAGDocument[] = Array.from(e.target.files).map((file) => ({
-        id: `doc-${Date.now()}-${file.name}`,
-        filename: file.name,
-        fileType: file.name.split('.').pop() as any || 'txt',
-        fileSize: file.size,
-        status: 'indexed', // Simulate pre-indexed for simplicity here
-        chunkCount: Math.floor(Math.random() * 50) + 10,
-        uploadedAt: new Date().toISOString(),
-        tags: [],
-      }));
-      
-      uploadDocuments(newDocs);
-      setSelectedDocs(prev => [...prev, ...newDocs.map(d => d.id)]);
+      const files = Array.from(e.target.files);
+      setStep(2);
+      setProcessingState('uploading');
+      setUploadProgress(0);
+      setUploadError('');
+
+      try {
+        const uploadedDocs = await documentApi.upload(files, (progress) => {
+          setUploadProgress(progress);
+          if (progress >= 100) {
+            setProcessingState('indexing');
+          }
+        });
+
+        uploadDocuments(uploadedDocs);
+
+        // Docs with completed indexing
+        const indexedDocs = uploadedDocs.filter((document) => document.status === 'indexed');
+        // Docs that uploaded OK but are still being processed by the RAG pipeline
+        const processingDocs = uploadedDocs.filter((document) => document.status === 'processing' || document.status === 'pending');
+
+        if (indexedDocs.length > 0) {
+          // Best case: fully indexed — proceed immediately
+          setSelectedDocs(prev => [...prev, ...indexedDocs.map(d => d.id)]);
+          setProcessingState('ready');
+          setTimeout(() => {
+            void createChat(indexedDocs.map(d => d.id), indexedDocs[0]?.filename);
+          }, 500);
+        } else if (processingDocs.length > 0) {
+          // Uploaded OK but LLM service is still indexing (or not running)
+          // Let the user know and allow them to start a chat anyway — the
+          // document will be available once indexing completes.
+          setSelectedDocs(prev => [...prev, ...processingDocs.map(d => d.id)]);
+          setProcessingState('ready');
+          setUploadError('Document uploaded. RAG indexing may still be in progress — queries will work once indexing is complete.');
+          setTimeout(() => {
+            void createChat(processingDocs.map(d => d.id), processingDocs[0]?.filename);
+          }, 800);
+        } else {
+          // Upload itself failed or returned no documents
+          setProcessingState('error');
+          setUploadError('Upload failed or no documents were returned. Please try again.');
+        }
+      } catch (error) {
+        setProcessingState('error');
+        setUploadError(getApiErrorMessage(error));
+      } finally {
+        e.target.value = '';
+      }
+    }
+  };
+
+  const createChat = async (documentIds = selectedDocs, fallbackTitle?: string) => {
+    if (documentIds.length === 0) return;
+    const title = `Chat about ${documents.find(d => d.id === documentIds[0])?.filename || fallbackTitle || 'Documents'}`;
+    try {
+      const convId = await createConversation(title, documentIds);
+      onChatCreated(convId);
+    } catch (error) {
+      setProcessingState('error');
+      setUploadError('Failed to create conversation. Please try again.');
     }
   };
 
   const startProcessing = () => {
-    if (selectedDocs.length === 0) return;
-    setStep(2);
-    setProcessingState('parsing');
-    
-    setTimeout(() => setProcessingState('chunking'), 1000);
-    setTimeout(() => setProcessingState('embedding'), 2200);
-    setTimeout(() => {
-      setProcessingState('ready');
-      setTimeout(() => {
-        // Create conversation
-        const title = `Chat about ${documents.find(d => d.id === selectedDocs[0])?.filename || 'Documents'}`;
-        const convId = createConversation(title);
-        onChatCreated(convId);
-      }, 800);
-    }, 3500);
+    void createChat();
   };
 
   if (!isOpen) return null;
@@ -74,7 +113,7 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
           <h2 className="text-lg font-semibold text-foreground">New Chat</h2>
-          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full" onClick={onClose} disabled={step === 2}>
+          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -95,13 +134,17 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
                     <p className="text-sm text-muted-foreground text-center py-4">No documents available.</p>
                   ) : (
                     <div className="max-h-48 overflow-y-auto space-y-2 pr-2">
-                      {documents.map((doc) => (
+                      {documents.map((doc) => {
+                        const isSelectable = doc.status === 'indexed';
+                        return (
                         <div
                           key={doc.id}
                           className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                             selectedDocs.includes(doc.id) ? 'border-primary bg-primary/10' : 'border-border/50 hover:bg-secondary/50'
+                          } ${!isSelectable ? 'opacity-60 cursor-not-allowed' : ''
                           }`}
                           onClick={() => {
+                            if (!isSelectable) return;
                             setSelectedDocs(prev => 
                               prev.includes(doc.id) ? prev.filter(id => id !== doc.id) : [...prev, doc.id]
                             );
@@ -109,9 +152,10 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
                         >
                           <FileText className={`w-5 h-5 ${selectedDocs.includes(doc.id) ? 'text-primary' : 'text-muted-foreground'}`} />
                           <span className="text-sm font-medium truncate flex-1">{doc.filename}</span>
+                          {!isSelectable && <span className="text-[10px] text-muted-foreground uppercase">{doc.status}</span>}
                           {selectedDocs.includes(doc.id) && <CheckCircle2 className="w-4 h-4 text-primary" />}
                         </div>
-                      ))}
+                      )})}
                     </div>
                   )}
                 </div>
@@ -127,10 +171,10 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload className="w-8 h-8 text-muted-foreground mb-3" />
                       <p className="text-sm text-muted-foreground">
-                        <span className="font-semibold text-primary">Click to upload</span> new documents
+                        <span className="font-semibold text-primary">Click to upload</span> PDF documents
                       </p>
                     </div>
-                    <input type="file" className="hidden" multiple accept=".pdf,.docx,.txt,.csv" onChange={handleFileSelect} />
+                    <input type="file" className="hidden" multiple accept=".pdf,application/pdf" onChange={handleFileSelect} />
                   </label>
                 </div>
               </motion.div>
@@ -151,6 +195,10 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
                     >
                       <CheckCircle2 className="w-8 h-8 text-primary" />
                     </motion.div>
+                  ) : processingState === 'error' ? (
+                    <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                      <X className="w-8 h-8 text-destructive" />
+                    </div>
                   ) : (
                     <>
                       <Loader2 className="w-12 h-12 text-primary animate-spin absolute" />
@@ -160,10 +208,20 @@ export function NewChatModal({ isOpen, onClose, onChatCreated }: NewChatModalPro
                 </div>
 
                 <div className="space-y-4 w-full max-w-xs mx-auto">
-                  <ProcessingStep label="Parsing documents" active={processingState === 'parsing'} done={['chunking', 'embedding', 'ready'].includes(processingState)} />
-                  <ProcessingStep label="Chunking content" active={processingState === 'chunking'} done={['embedding', 'ready'].includes(processingState)} />
-                  <ProcessingStep label="Generating embeddings" active={processingState === 'embedding'} done={processingState === 'ready'} />
+                  <ProcessingStep label={`Uploading documents${uploadProgress ? ` (${uploadProgress}%)` : ''}`} active={processingState === 'uploading'} done={['indexing', 'ready'].includes(processingState)} />
+                  <ProcessingStep label="Indexing in RAG pipeline" active={processingState === 'indexing'} done={processingState === 'ready'} />
+                  <ProcessingStep label="Ready for chat" active={processingState === 'ready'} done={processingState === 'ready'} />
                 </div>
+
+                {uploadError && (
+                  <p className="text-sm text-destructive text-center max-w-sm">{uploadError}</p>
+                )}
+
+                {processingState === 'error' && (
+                  <Button variant="outline" onClick={() => setStep(1)}>
+                    Back
+                  </Button>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

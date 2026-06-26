@@ -18,6 +18,7 @@ type AuthState = {
   refreshAccessToken: () => Promise<string | null>;
   logout: () => Promise<void>;
   clearSession: () => void;
+  clearError: () => void;
 };
 
 const ACCESS_TOKEN_KEY = 'financial-ai.accessToken';
@@ -74,7 +75,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
+    // Optimistically restore session from storage first so the UI doesn't
+    // flash a loading spinner — we'll validate in the background.
     set({ user, accessToken, refreshToken, status: 'authenticated', error: null });
+
+    // Proactively attempt a refresh to validate the stored tokens.
+    // If the server rejects them (e.g. JWT secret was rotated), clear session.
+    try {
+      const { data } = await import('../services/api').then(m =>
+        m.apiClient.post<{ accessToken?: string; token?: string }>('/api/v1/auth/refresh', {
+          refreshToken
+        })
+      );
+      const newAccessToken = data.accessToken || data.token;
+      if (newAccessToken) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
+        set({ accessToken: newAccessToken });
+      }
+    } catch {
+      // Token is invalid (signature mismatch, expired, etc.) — force logout
+      clearStoredAuth();
+      set({ user: null, accessToken: null, refreshToken: null, status: 'unauthenticated', error: null });
+    }
   },
 
   syncUser: async () => {
@@ -147,6 +169,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       status: 'unauthenticated',
       error: null
     });
+    // Clear chat data so a new user cannot see previous user's conversations
+    import('@/store/ragStore').then(({ useRagStore }) => {
+      useRagStore.getState().clearSession();
+    });
+  },
+
+  clearError: () => {
+    set({ error: null });
   }
 }));
 

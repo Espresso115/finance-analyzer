@@ -17,7 +17,9 @@ import { SourcePanel } from './SourcePanel';
 import { ConversationList } from './ConversationList';
 import { NewChatModal } from './NewChatModal';
 import { useRagStore } from '@/store/ragStore';
-import type { ChatMessage as ChatMessageType } from '@/types/rag';
+import { analysisApi, getApiErrorMessage } from '@/services/api';
+import { useAuthStore } from '@/store/authStore';
+import type { ChatMessage as ChatMessageType, RetrievedSource } from '@/types/rag';
 
 // ── Prompt suggestions ──────────────────────────────────────────────
 const PROMPT_SUGGESTIONS = [
@@ -42,18 +44,24 @@ const sidebarVariants = {
 };
 
 export function ChatInterface() {
-  const { conversations, messages, activeConversationId, setActiveConversation, addMessage, deleteConversation, renameConversation } = useRagStore();
+  const { conversations, documents, messages, activeConversationId, setActiveConversation, addMessage, deleteConversation, renameConversation, loadConversations } = useRagStore();
+  const userId = useAuthStore((state) => state.user?._id);
   
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
-  const [selectedMessageSources, setSelectedMessageSources] = useState<any[]>([]);
+  const [selectedMessageSources, setSelectedMessageSources] = useState<RetrievedSource[]>([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const activeMessages = activeConversationId ? (messages[activeConversationId] || []) : [];
   const activeConversation = conversations.find(c => c.id === activeConversationId);
+  const selectedDocumentIds = activeConversation?.documentIds || [];
+  const selectedDocumentNames = selectedDocumentIds
+    .map((documentId) => documents.find((document) => document.id === documentId)?.filename)
+    .filter((filename): filename is string => Boolean(filename));
 
   useEffect(() => {
     const handler = () => {
@@ -68,13 +76,20 @@ export function ChatInterface() {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
+  // Load conversations from backend on mount / when user changes
+  useEffect(() => {
+    if (userId) {
+      void loadConversations();
+    }
+  }, [userId, loadConversations]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeMessages]);
 
   const handleSend = useCallback(
-    (text: string) => {
-      if (!activeConversationId) return;
+    async (text: string) => {
+      if (!activeConversationId || isSending) return;
 
       const userMsg: ChatMessageType = {
         id: `msg-${Date.now()}`,
@@ -84,20 +99,36 @@ export function ChatInterface() {
       };
       
       addMessage(activeConversationId, userMsg);
+      setIsSending(true);
 
-      // Simulate assistant response after a short delay
-      setTimeout(() => {
+      try {
+        const result = await analysisApi.query({
+          query: text,
+          documentIds: selectedDocumentIds,
+          conversationId: activeConversationId,
+        });
         const assistantMsg: ChatMessageType = {
           id: `msg-${Date.now() + 1}`,
           role: 'assistant',
-          content: 'This is a simulated response. In a real RAG application, I would retrieve context from your uploaded documents and generate an answer based on that information.',
+          content: result.response,
           timestamp: new Date().toISOString(),
-          sources: [], // Sources from backend
+          sources: result.sources,
         };
         addMessage(activeConversationId, assistantMsg);
-      }, 1200);
+      } catch (error) {
+        const assistantMsg: ChatMessageType = {
+          id: `msg-${Date.now() + 1}`,
+          role: 'assistant',
+          content: getApiErrorMessage(error),
+          timestamp: new Date().toISOString(),
+          sources: [],
+        };
+        addMessage(activeConversationId, assistantMsg);
+      } finally {
+        setIsSending(false);
+      }
     },
-    [activeConversationId, addMessage]
+    [activeConversationId, addMessage, isSending, selectedDocumentIds]
   );
 
   const handleMessageClick = useCallback(
@@ -166,7 +197,7 @@ export function ChatInterface() {
                 }}
                 onNew={() => setIsNewChatModalOpen(true)}
                 onRename={renameConversation}
-                onDelete={deleteConversation}
+                onDelete={(id) => void deleteConversation(id)}
               />
             </div>
           </motion.div>
@@ -290,9 +321,9 @@ export function ChatInterface() {
               <div className="max-w-3xl mx-auto">
                 <ChatInput
                   onSend={handleSend}
+                  disabled={isSending}
                   placeholder="Ask a question..."
-                  // In a real app we would pass the actual attached documents names
-                  selectedDocuments={[]} 
+                  selectedDocuments={selectedDocumentNames} 
                 />
               </div>
             </div>
@@ -327,4 +358,3 @@ export function ChatInterface() {
     </div>
   );
 }
-

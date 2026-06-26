@@ -1,3 +1,13 @@
 fastapi
 uvicorn
 python-dotenv
+python-multipart
+pydantic
+docling
+sentence-transformers
+tiktoken
+numpy
+httpx
+chromadb
+google-genai
+groq

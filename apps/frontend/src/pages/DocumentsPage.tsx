@@ -2,7 +2,6 @@ import { AppShell } from '../components/AppShell';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { DocumentUpload } from '../components/documents/DocumentUpload';
 import { DocumentList } from '../components/documents/DocumentList';
-import { DocumentFilters } from '../components/documents/DocumentFilters';
 
 export function DocumentsPage() {
   return (
@@ -27,7 +26,6 @@ export function DocumentsPage() {
             </TabsList>
             
             <TabsContent value="all" className="space-y-6">
-              <DocumentFilters />
               <DocumentList />
             </TabsContent>
             

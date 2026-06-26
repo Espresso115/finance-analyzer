@@ -60,6 +60,11 @@ const DocumentSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  ragDocumentId: {
+    type: String,
+    default: '',
+    index: true
+  },
   processedAt: {
     type: Date,
     default: null

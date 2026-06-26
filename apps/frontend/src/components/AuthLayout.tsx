@@ -1,20 +1,21 @@
 import type { PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Activity, TrendingUp, Shield, BarChart3 } from 'lucide-react';
+import { Activity, TrendingUp, Shield, BarChart3, Briefcase } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type AuthLayoutProps = PropsWithChildren;
 
 const NAV_LINKS = [
-  { label: 'Markets', href: '/' },
-  { label: 'Research', href: '/' },
-  { label: 'Security', href: '/' },
+  { label: 'Markets', description: 'Real-time stock market overview, live prices, watchlists, and market insights.' },
+  { label: 'Research', description: 'AI-powered financial report analysis using Retrieval-Augmented Generation (RAG), intelligent document search, and conversational financial research.' },
+  { label: 'Pricing', description: 'Plus includes more powerful AI models, faster response times, premium analysis features, and email workflow automation.' },
 ];
 
 const FEATURES = [
   { icon: TrendingUp, text: 'Real-time data' },
   { icon: BarChart3, text: 'Deep analytics' },
-  { icon: Shield, text: 'Bank-grade security' },
+  { icon: Briefcase, text: 'Personal Financial Workspace' },
 ];
 
 export function AuthLayout({ children }: AuthLayoutProps) {
@@ -77,15 +78,20 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </Link>
 
         <div className="hidden sm:flex items-center gap-6">
-          {NAV_LINKS.map(({ label, href }) => (
-            <Link
-              key={label}
-              to={href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {label}
-            </Link>
-          ))}
+          <TooltipProvider delayDuration={300}>
+            {NAV_LINKS.map(({ label, description }) => (
+              <Tooltip key={label}>
+                <TooltipTrigger asChild>
+                  <div className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-help">
+                    {label}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-[250px] text-xs text-center p-3">
+                  <p>{description}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </TooltipProvider>
         </div>
       </nav>
 

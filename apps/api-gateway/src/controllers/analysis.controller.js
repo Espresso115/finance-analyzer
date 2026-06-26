@@ -4,6 +4,7 @@ import {
   estimateTokens,
   generateAnalysis,
   retrieveRelevantDocuments,
+  runRagAnalysis,
   serializeAnalysis
 } from '../services/analysis.service.js';
 
@@ -18,6 +19,17 @@ const parseLimit = (value, fallback = 5) => {
   return Math.max(1, Math.min(parsed, 10));
 };
 
+const parseDocumentIds = (value) => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((documentId) => String(documentId || '').trim())
+    .filter((documentId) => mongoose.isValidObjectId(documentId))
+    .slice(0, 50);
+};
+
 export const queryAnalysis = async (req, res) => {
   try {
     const query = String(req.body.query || '').trim();
@@ -30,12 +42,38 @@ export const queryAnalysis = async (req, res) => {
       return res.status(422).json({ error: 'Analysis query must be 1000 characters or fewer' });
     }
 
-    const sources = await retrieveRelevantDocuments({
-      userId: getUserId(req),
-      query,
-      limit: parseLimit(req.body.limit)
-    });
-    const generation = await generateAnalysis({ query, sources });
+    const limit = parseLimit(req.body.limit);
+    const documentIds = parseDocumentIds(req.body.documentIds);
+    let sources;
+    let generation;
+
+    try {
+      const ragGeneration = await runRagAnalysis({
+        userId: getUserId(req),
+        query,
+        limit,
+        documentIds,
+        conversationId: req.body.conversationId ? String(req.body.conversationId) : null
+      });
+
+      if (ragGeneration) {
+        sources = ragGeneration.sources;
+        generation = ragGeneration;
+      }
+    } catch (ragError) {
+      console.warn(`RAG Analysis Fallback: ${ragError.message}`);
+    }
+
+    if (!generation) {
+      sources = await retrieveRelevantDocuments({
+        userId: getUserId(req),
+        query,
+        limit,
+        documentIds
+      });
+      generation = await generateAnalysis({ query, sources });
+    }
+
     const sourcePayload = sources.map((source) => ({
       documentId: source.document._id,
       documentName: source.document.originalName,

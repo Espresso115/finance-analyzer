@@ -5,11 +5,14 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
+import { documentApi, getApiErrorMessage } from '@/services/api';
+import { useRagStore } from '@/store/ragStore';
 
 export function DocumentUpload() {
   const [isDragging, setIsDragging] = useState(false);
-  const [files, setFiles] = useState<Array<{ file: File; progress: number; status: 'uploading' | 'done' | 'error' }>>([]);
+  const [files, setFiles] = useState<Array<{ file: File; progress: number; status: 'uploading' | 'done' | 'error'; error?: string }>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadDocuments = useRagStore((state) => state.uploadDocuments);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -35,31 +38,47 @@ export function DocumentUpload() {
     }
   };
 
-  const handleFiles = (newFiles: File[]) => {
-    const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown', 'text/csv'];
+  const handleFiles = async (newFiles: File[]) => {
+    const validTypes = ['application/pdf'];
     
-    const fileObjects = newFiles.filter(file => validTypes.includes(file.type) || file.name.endsWith('.md') || file.name.endsWith('.csv')).map(file => ({
+    const fileObjects = newFiles.filter(file => validTypes.includes(file.type) || file.name.toLowerCase().endsWith('.pdf')).map(file => ({
       file,
       progress: 0,
       status: 'uploading' as const
     }));
 
+    if (!fileObjects.length) {
+      return;
+    }
+
     setFiles(prev => [...prev, ...fileObjects]);
 
-    // Mock upload progress
-    fileObjects.forEach(fileObj => {
-      let currentProgress = 0;
-      const interval = setInterval(() => {
-        currentProgress += Math.random() * 20;
-        if (currentProgress >= 100) {
-          currentProgress = 100;
-          clearInterval(interval);
-          setFiles(prev => prev.map(f => f.file === fileObj.file ? { ...f, progress: 100, status: 'done' } : f));
-        } else {
-          setFiles(prev => prev.map(f => f.file === fileObj.file ? { ...f, progress: currentProgress } : f));
+    try {
+      const uploadedDocuments = await documentApi.upload(
+        fileObjects.map((fileObj) => fileObj.file),
+        (progress) => {
+          setFiles(prev => prev.map(f =>
+            fileObjects.some(fileObj => fileObj.file === f.file)
+              ? { ...f, progress }
+              : f
+          ));
         }
-      }, 300);
-    });
+      );
+
+      uploadDocuments(uploadedDocuments);
+      setFiles(prev => prev.map(f =>
+        fileObjects.some(fileObj => fileObj.file === f.file)
+          ? { ...f, progress: 100, status: 'done' }
+          : f
+      ));
+    } catch (error) {
+      const message = getApiErrorMessage(error);
+      setFiles(prev => prev.map(f =>
+        fileObjects.some(fileObj => fileObj.file === f.file)
+          ? { ...f, status: 'error', error: message }
+          : f
+      ));
+    }
   };
 
   const removeFile = (fileToRemove: File) => {
@@ -92,17 +111,13 @@ export function DocumentUpload() {
             </p>
             <div className="flex flex-wrap justify-center gap-2 mb-6">
               <Badge variant="outline">PDF</Badge>
-              <Badge variant="outline">DOCX</Badge>
-              <Badge variant="outline">TXT</Badge>
-              <Badge variant="outline">MD</Badge>
-              <Badge variant="outline">CSV</Badge>
             </div>
             <input 
               type="file" 
               ref={fileInputRef} 
               className="hidden" 
               multiple 
-              accept=".pdf,.docx,.txt,.md,.csv" 
+              accept=".pdf,application/pdf" 
               onChange={handleFileInput}
             />
             <Button onClick={() => fileInputRef.current?.click()} className="glow-sm">
@@ -148,6 +163,9 @@ export function DocumentUpload() {
                         {fileObj.status === 'error' && <AlertCircle className="w-3.5 h-3.5 text-destructive" />}
                       </div>
                     </div>
+                    {fileObj.error && (
+                      <p className="text-xs text-destructive mb-2">{fileObj.error}</p>
+                    )}
                     <Progress value={fileObj.progress} className="h-1.5" />
                   </div>
                 </Card>

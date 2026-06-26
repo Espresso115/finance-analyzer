@@ -1,6 +1,6 @@
+import "./config/env.js";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
@@ -11,6 +11,7 @@ import analysisRoutes from "./routes/analysis.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import docsRoutes from "./routes/docs.routes.js";
 import documentRoutes from "./routes/document.routes.js";
+import conversationRoutes from "./routes/conversation.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import marketRoutes from "./routes/market.routes.js";
 import redisClient from "./config/redis.js";
@@ -18,8 +19,6 @@ import { ensureAvatarUploadDirectory } from "./controllers/user.controller.js";
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 import { authorizeRoles, protect } from "./middleware/auth.middleware.js";
 import { requestId } from "./middleware/requestId.middleware.js";
-
-dotenv.config();
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -38,10 +37,9 @@ app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/market`, marketRoutes);
 app.use(`${API_PREFIX}/documents`, documentRoutes);
+app.use('/api/v1/conversations', conversationRoutes);
 app.use(`${API_PREFIX}/analysis`, analysisRoutes);
 app.use(`${API_PREFIX}/docs`, docsRoutes);
-
-
 app.get("/health", (req, res) => {
   res.json({
     service: "api-gateway",

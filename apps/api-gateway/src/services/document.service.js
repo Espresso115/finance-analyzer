@@ -2,16 +2,12 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export const SUPPORTED_DOCUMENT_TYPES = {
-  'application/pdf': ['.pdf'],
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-  'text/plain': ['.txt'],
-  'text/markdown': ['.md'],
-  'text/csv': ['.csv']
+  'application/pdf': ['.pdf']
 };
 
 export const MAX_DOCUMENT_SIZE_BYTES = 100 * 1024 * 1024;
 
-const TEXT_MIME_TYPES = new Set(['text/plain', 'text/markdown', 'text/csv']);
+const TEXT_MIME_TYPES = new Set([]);
 
 export const normalizeDocumentTags = (tags) => {
   if (!tags) {
@@ -89,6 +85,7 @@ export const serializeDocument = (document, { includeText = false } = {}) => {
     mimeType: document.mimeType,
     size: document.size,
     status: document.status,
+    ragDocumentId: document.ragDocumentId,
     description: document.description,
     tags: document.tags,
     textPreview: document.textPreview,

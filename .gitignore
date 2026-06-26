@@ -22,3 +22,17 @@ project-context/
 progress-tracker/
 apps/api-gateway/tests/
 BUILD_PLAN_30_DAYS.md
+
+apps/llm-service/data/chroma/
+
+apps/llm-service/data/cache/
+
+apps/llm-service/data/conversations/
+
+**/__pycache__/
+*.pyc
+
+venv/
+.venv/
+**/venv/
+**/.venv/

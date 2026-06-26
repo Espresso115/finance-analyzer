@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Document from '../models/Document.js';
+import { queryRag } from './llmRag.service.js';
 
 const FINANCIAL_ANALYST_SYSTEM_PROMPT = [
   'You are a careful financial analysis assistant.',
@@ -28,14 +29,20 @@ const createSnippet = (text, query) => {
 
 export const estimateTokens = (text) => Math.ceil(String(text || '').split(/\s+/).filter(Boolean).length * 1.35);
 
-export const retrieveRelevantDocuments = async ({ userId, query, limit = 5 }) => {
+export const retrieveRelevantDocuments = async ({ userId, query, limit = 5, documentIds = [] }) => {
   const queryTokens = tokenize(query);
-  const documents = await Document.find({
+  const filter = {
     userId,
     deletedAt: null,
     status: 'completed',
     extractedText: { $ne: '' }
-  }).sort({ updatedAt: -1 }).limit(100);
+  };
+
+  if (documentIds.length) {
+    filter._id = { $in: documentIds };
+  }
+
+  const documents = await Document.find(filter).sort({ updatedAt: -1 }).limit(100);
 
   return documents
     .map((document) => {
@@ -74,6 +81,25 @@ export const buildFallbackAnalysis = ({ query, sources }) => {
   ].join('\n\n');
 };
 
+const buildRetrievedChunksResponse = ({ query, sources }) => {
+  if (!sources.length) {
+    return buildFallbackAnalysis({ query, sources });
+  }
+
+  const sourceSummary = sources
+    .slice(0, 5)
+    .map((source, index) => [
+      `${index + 1}. ${source.document.originalName}`,
+      source.snippet
+    ].join('\n'))
+    .join('\n\n');
+
+  return [
+    `I could not generate a synthesized answer right now, but I did retrieve relevant document chunks for: "${query}".`,
+    sourceSummary
+  ].join('\n\n');
+};
+
 export const generateAnalysis = async ({ query, sources }) => {
   const context = sources.map((source) => `[${source.document.originalName}] ${source.snippet}`);
   const llmServiceUrl = process.env.LLM_SERVICE_URL;
@@ -94,7 +120,7 @@ export const generateAnalysis = async ({ query, sources }) => {
       context,
       stream: false
     }, {
-      timeout: 10000
+      timeout: 120000  // 2 minutes — Groq/Gemini generation can take time
     });
 
     return {
@@ -112,6 +138,67 @@ export const generateAnalysis = async ({ query, sources }) => {
       error: error.message
     };
   }
+};
+
+export const runRagAnalysis = async ({ userId, query, limit = 5, documentIds = [], conversationId = null }) => {
+  const filter = {
+    userId,
+    deletedAt: null,
+    status: 'completed',
+    ragDocumentId: { $ne: '' }
+  };
+
+  if (documentIds.length) {
+    filter._id = { $in: documentIds };
+  }
+
+  const documents = await Document.find(filter).sort({ updatedAt: -1 }).limit(100);
+
+  if (!documents.length) {
+    return null;
+  }
+
+  const ragDocumentIds = [...new Set(documents.map((document) => document.ragDocumentId).filter(Boolean))];
+  const documentByRagId = new Map(documents.map((document) => [document.ragDocumentId, document]));
+  const ragResponse = await queryRag({
+    question: query,
+    topK: limit,
+    documentIds: ragDocumentIds,
+    conversationId: conversationId ? `u${userId}_${conversationId}` : `analysis-${userId}`,
+    generateAnswer: String(process.env.RAG_GENERATE_ANSWER || 'true').toLowerCase() !== 'false'
+  });
+
+  if (!ragResponse) {
+    return null;
+  }
+
+  const sources = (ragResponse.sources || [])
+    .map((source) => {
+      const document = documentByRagId.get(source.document_id);
+
+      if (!document) {
+        return null;
+      }
+
+      return {
+        document,
+        score: Number(source.score || 0),
+        snippet: String(source.text || '').replace(/\s+/g, ' ').trim().slice(0, 1200),
+        ragSource: source
+      };
+    })
+    .filter(Boolean);
+
+  return {
+    response: ragResponse.generationUnavailable || ragResponse.provider === 'retrieval'
+      ? buildRetrievedChunksResponse({ query, sources })
+      : (ragResponse.answer || buildFallbackAnalysis({ query, sources })),
+    sources,
+    model: 'rag-pipeline',
+    provider: ragResponse.provider || 'rag-pipeline',
+    fallback: Boolean(ragResponse.generationUnavailable || ragResponse.provider === 'retrieval'),
+    cached: Boolean(ragResponse.cached)
+  };
 };
 
 export const serializeAnalysis = (analysis) => ({

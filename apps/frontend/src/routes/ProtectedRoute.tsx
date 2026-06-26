@@ -6,7 +6,6 @@ import { useAuthStore } from '../store/authStore';
 export function ProtectedRoute() {
   const location = useLocation();
   const status = useAuthStore((state) => state.status);
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   if (status === 'idle' || status === 'loading') {
     return (
@@ -30,7 +29,9 @@ export function ProtectedRoute() {
     );
   }
 
-  if (!accessToken) {
+  // Redirect if unauthenticated OR if the access token has been cleared
+  // (e.g. after hydrate() detects an invalid/expired refresh token)
+  if (status === 'unauthenticated') {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 

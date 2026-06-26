@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -19,6 +19,11 @@ export function LoginPage() {
   const authError = useAuthStore((state) => state.error);
   const [showPassword, setShowPassword] = useState(false);
   const isSubmitting = status === 'loading';
+  const clearError = useAuthStore((state) => state.clearError);
+
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
 
   const {
     formState: { errors },

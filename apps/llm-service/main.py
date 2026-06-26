@@ -1,15 +1,34 @@
 import asyncio
 import json
 import os
-from typing import List, Optional
-from urllib.error import URLError
+import uuid
+from typing import Any, List, Optional
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from fastapi import FastAPI
+from dotenv import find_dotenv, load_dotenv
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from app.api.upload import router as upload_router
+from app.api.document import router as document_router
+from app.api.process import router as process_router
+from app.api.query import router as query_router
+from app.config.settings import ensure_data_directories
+from app.services.llm_service import LLMService
+from app.services.llm.providers import get_llm_provider
+
+load_dotenv(find_dotenv(), override=False)
+
+ensure_data_directories()
+
 app = FastAPI()
+
+app.include_router(upload_router)
+app.include_router(document_router)
+app.include_router(process_router)
+app.include_router(query_router)
 
 
 class GenerateRequest(BaseModel):
@@ -28,44 +47,101 @@ class GenerateResponse(BaseModel):
     error: Optional[str] = None
 
 
-def _ollama_base_url() -> str:
-    return os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+class RagQueryRequest(BaseModel):
+    question: str
+    top_k: Optional[int] = None
+    document_ids: Optional[List[str]] = None
+    generate_answer: bool = True
+    conversation_id: Optional[str] = "default"
 
 
 def _llm_model() -> str:
-    return os.getenv("LLM_MODEL", "qwen2.5:7b-instruct")
+    from app.config.settings import settings
+    provider = settings.llm_provider.lower()
+    return settings.gemini_model if provider == "gemini" else settings.groq_model
+
+
+def _rag_base_url() -> Optional[str]:
+    value = os.getenv("RAG_SERVICE_URL", "").strip()
+    return value.rstrip("/") if value else None
 
 
 def _fallback_enabled() -> bool:
     return os.getenv("LLM_ALLOW_FALLBACK", "true").lower() in {"1", "true", "yes"}
 
 
-def _build_prompt(payload: GenerateRequest) -> str:
-    sections = []
-    if payload.system:
-        sections.append(f"System:\n{payload.system}")
-    if payload.context:
-        sections.append("Context:\n" + "\n\n".join(payload.context))
-    sections.append(f"User question:\n{payload.prompt}")
-    return "\n\n".join(sections)
+def _read_json_response(response) -> dict[str, Any]:
+    return json.loads(response.read().decode("utf-8"))
 
 
-def _ollama_generate(payload: GenerateRequest) -> str:
-    request_body = json.dumps({
-        "model": payload.model or _llm_model(),
-        "prompt": _build_prompt(payload),
-        "stream": False
-    }).encode("utf-8")
+def _extract_http_error(error: HTTPError) -> str:
+    try:
+        payload = error.read().decode("utf-8")
+    except OSError:
+        payload = error.reason
+
+    return payload or str(error)
+
+
+def _require_rag_base_url() -> str:
+    base_url = _rag_base_url()
+    if not base_url:
+        raise HTTPException(
+            status_code=503,
+            detail="RAG_SERVICE_URL is not configured for llm-service.",
+        )
+
+    return base_url
+
+
+def _post_json(url: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
     request = Request(
-        f"{_ollama_base_url()}/api/generate",
-        data=request_body,
+        url,
+        data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
-        method="POST"
+        method="POST",
     )
 
-    with urlopen(request, timeout=30) as response:
-        data = json.loads(response.read().decode("utf-8"))
-        return data.get("response", "").strip()
+    with urlopen(request, timeout=timeout) as response:
+        return _read_json_response(response)
+
+
+def _post_multipart_file(
+    url: str,
+    *,
+    filename: str,
+    content_type: str,
+    contents: bytes,
+    timeout: float,
+) -> dict[str, Any]:
+    boundary = f"----llm-service-rag-{uuid.uuid4().hex}"
+    body = b"".join(
+        [
+            f"--{boundary}\r\n".encode("utf-8"),
+            (
+                'Content-Disposition: form-data; name="file"; '
+                f'filename="{filename}"\r\n'
+            ).encode("utf-8"),
+            f"Content-Type: {content_type or 'application/octet-stream'}\r\n\r\n".encode(
+                "utf-8"
+            ),
+            contents,
+            b"\r\n",
+            f"--{boundary}--\r\n".encode("utf-8"),
+        ]
+    )
+    request = Request(
+        url,
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Content-Length": str(len(body)),
+        },
+        method="POST",
+    )
+
+    with urlopen(request, timeout=timeout) as response:
+        return _read_json_response(response)
 
 
 def _fallback_response(payload: GenerateRequest, error: Optional[str] = None) -> GenerateResponse:
@@ -75,8 +151,8 @@ def _fallback_response(payload: GenerateRequest, error: Optional[str] = None) ->
 
     return GenerateResponse(
         response=(
-            "Local LLM generation is not available yet."
-            f"{context_note} Configure Ollama to enable model-backed answers."
+            "LLM generation is currently unavailable."
+            f"{context_note} Check API key configurations."
         ),
         model=payload.model or _llm_model(),
         provider="fallback",
@@ -90,22 +166,26 @@ def health():
     return {
         "service": "llm-service",
         "status": "running",
-        "ollamaBaseUrl": _ollama_base_url(),
-        "model": _llm_model()
+        "model": _llm_model(),
+        "ragServiceUrl": _rag_base_url()
     }
 
 
 @app.post("/generate", response_model=GenerateResponse)
 async def generate(payload: GenerateRequest):
     try:
-        response_text = await asyncio.to_thread(_ollama_generate, payload)
+        llm_service = LLMService(provider=get_llm_provider())
+        context_str = "\n\n".join(payload.context) if payload.context else ""
+        system_str = f"System:\n{payload.system}\n\n" if payload.system else ""
+        full_context = system_str + context_str
+        response = await llm_service.generate(question=payload.prompt, context=full_context)
         return GenerateResponse(
-            response=response_text,
-            model=payload.model or _llm_model(),
-            provider="ollama",
+            response=response.text,
+            model=response.model,
+            provider=response.provider,
             fallback=False
         )
-    except (URLError, TimeoutError, OSError, json.JSONDecodeError) as error:
+    except Exception as error:
         if not _fallback_enabled():
             raise
         return _fallback_response(payload, str(error))
@@ -113,11 +193,26 @@ async def generate(payload: GenerateRequest):
 
 @app.post("/generate/stream")
 async def generate_stream(payload: GenerateRequest):
-    result = await generate(payload)
+    try:
+        llm_service = LLMService(provider=get_llm_provider())
+        context_str = "\n\n".join(payload.context) if payload.context else ""
+        system_str = f"System:\n{payload.system}\n\n" if payload.system else ""
+        full_context = system_str + context_str
 
-    async def stream_chunks():
-      for word in result.response.split():
-          yield f"{word} "
-          await asyncio.sleep(0)
+        async def stream_chunks():
+            try:
+                async for chunk in llm_service.stream(question=payload.prompt, context=full_context):
+                    yield chunk
+            except Exception as exc:
+                yield f"\n\n[Generation error: {exc}]"
 
-    return StreamingResponse(stream_chunks(), media_type="text/plain")
+        return StreamingResponse(stream_chunks(), media_type="text/plain")
+    except Exception as error:
+        if not _fallback_enabled():
+            raise HTTPException(status_code=500, detail=str(error))
+        
+        # Fallback text since it's a stream
+        async def stream_fallback():
+            yield _fallback_response(payload, str(error)).response
+            
+        return StreamingResponse(stream_fallback(), media_type="text/plain")

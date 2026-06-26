@@ -13,6 +13,7 @@ import type {
   MarketInstrument,
   MarketQuote
 } from '../types/market';
+import type { RAGDocument, RetrievedSource } from '../types/rag';
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -80,15 +81,27 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryableRequestConfig | undefined;
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
+    // Skip retry for:
+    // - Non-401 errors
+    // - Already-retried requests
+    // - The /auth/refresh endpoint itself (would cause infinite loop)
+    // - Requests with no auth config (unauthenticated calls)
+    const isRefreshEndpoint = originalRequest?.url?.includes('/auth/refresh');
+    if (
+      error.response?.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry ||
+      isRefreshEndpoint ||
+      !authConfig
+    ) {
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
-    const accessToken = await authConfig?.refreshAccessToken();
+    const accessToken = await authConfig.refreshAccessToken();
 
     if (!accessToken) {
-      authConfig?.onAuthFailure();
+      authConfig.onAuthFailure();
       return Promise.reject(error);
     }
 
@@ -229,5 +242,184 @@ export const marketApi = {
       responseType: 'text'
     });
     return data;
+  }
+};
+
+type ApiDocument = {
+  id: string;
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  status: 'pending' | 'processing' | 'completed' | 'error';
+  description?: string;
+  tags?: string[];
+  textPreview?: string;
+  chunkCount?: number;
+  processedAt?: string;
+  createdAt: string;
+};
+
+type ApiAnalysisSource = {
+  documentId: string;
+  documentName: string;
+  snippet: string;
+  score: number;
+};
+
+const mimeToFileType = (mimeType: string, filename: string): RAGDocument['fileType'] => {
+  const extension = filename.split('.').pop()?.toLowerCase();
+
+  if (extension === 'pdf' || mimeType === 'application/pdf') return 'pdf';
+  if (extension === 'docx' || mimeType.includes('wordprocessingml')) return 'docx';
+  if (extension === 'md' || mimeType === 'text/markdown') return 'md';
+  if (extension === 'csv' || mimeType === 'text/csv') return 'csv';
+  return 'txt';
+};
+
+const mapDocumentStatus = (status: ApiDocument['status']): RAGDocument['status'] => {
+  if (status === 'completed') return 'indexed';
+  if (status === 'error') return 'failed';
+  return status;
+};
+
+const mapDocument = (document: ApiDocument): RAGDocument => ({
+  id: document.id,
+  filename: document.originalName || document.filename,
+  fileType: mimeToFileType(document.mimeType, document.originalName || document.filename),
+  fileSize: document.size,
+  status: mapDocumentStatus(document.status),
+  chunkCount: document.chunkCount || 0,
+  uploadedAt: document.createdAt,
+  processedAt: document.processedAt,
+  tags: document.tags || [],
+  description: document.description,
+  preview: document.textPreview
+});
+
+const mapAnalysisSource = (source: ApiAnalysisSource, index: number): RetrievedSource => ({
+  sourceId: index + 1,
+  score: Math.max(0, Math.min(Number(source.score) || 0, 1)),
+  documentId: source.documentId,
+  chunkId: '',
+  sectionId: '',
+  filename: source.documentName,
+  text: source.snippet,
+  metadata: {}
+});
+
+export const documentApi = {
+  async list() {
+    const { data } = await apiClient.get<{ success: boolean; data: ApiDocument[] }>(
+      '/api/v1/documents'
+    );
+    return data.data.map(mapDocument);
+  },
+
+  async upload(files: File[], onUploadProgress?: (progress: number) => void) {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('documents', file));
+
+    const { data } = await apiClient.post<{ success: boolean; data: ApiDocument[] }>(
+      '/api/v1/documents/upload',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (event) => {
+          if (!event.total || !onUploadProgress) return;
+          onUploadProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      }
+    );
+
+    return data.data.map(mapDocument);
+  },
+
+  async delete(documentId: string) {
+    await apiClient.delete(`/api/v1/documents/${documentId}`);
+  }
+};
+
+export const analysisApi = {
+  async query(payload: { query: string; limit?: number; documentIds?: string[]; conversationId?: string | null }) {
+    const { data } = await apiClient.post<{
+      success: boolean;
+      data: {
+        id: string;
+        query: string;
+        response: string;
+        sources: ApiAnalysisSource[];
+        provider: string;
+        fallback: boolean;
+      };
+    }>('/api/v1/analysis/query', payload);
+
+    return {
+      ...data.data,
+      sources: data.data.sources.map(mapAnalysisSource)
+    };
+  }
+};
+
+type ApiConversationMessage = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  sources?: ApiAnalysisSource[];
+  timestamp?: string;
+};
+
+type ApiConversation = {
+  id: string;
+  title: string;
+  documentIds: string[];
+  messages: ApiConversationMessage[];
+  lastMessage: string;
+  messageCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ConversationListResponse = { success: boolean; data: ApiConversation[] };
+type ConversationResponse = { success: boolean; data: ApiConversation };
+
+export const conversationApi = {
+  async list() {
+    const { data } = await apiClient.get<ConversationListResponse>('/api/v1/conversations');
+    return data.data;
+  },
+
+  async get(conversationId: string) {
+    const { data } = await apiClient.get<ConversationResponse>(`/api/v1/conversations/${conversationId}`);
+    return data.data;
+  },
+
+  async create(title: string, documentIds: string[] = []) {
+    const { data } = await apiClient.post<ConversationResponse>('/api/v1/conversations', {
+      title,
+      documentIds
+    });
+    return data.data;
+  },
+
+  async rename(conversationId: string, title: string) {
+    const { data } = await apiClient.put<ConversationResponse>(`/api/v1/conversations/${conversationId}`, {
+      title
+    });
+    return data.data;
+  },
+
+  async delete(conversationId: string) {
+    await apiClient.delete(`/api/v1/conversations/${conversationId}`);
+  },
+
+  async addMessage(conversationId: string, message: ApiConversationMessage) {
+    const { data } = await apiClient.post<ConversationResponse>(
+      `/api/v1/conversations/${conversationId}/messages`,
+      { message }
+    );
+    return data.data;
   }
 };

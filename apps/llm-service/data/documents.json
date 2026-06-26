@@ -1,0 +1,38 @@
+[
+  {
+    "document_id": "c87bfd97-c18e-437c-9552-804494a64bbd",
+    "filename": "resume1.pdf",
+    "file_path": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\uploads\\c87bfd97-c18e-437c-9552-804494a64bbd.pdf",
+    "size_bytes": 114484,
+    "file_hash": "8c647230a028ae978b9767157731d8bb17978c43401c980affc235cbd9aaf893",
+    "status": "indexed",
+    "processed_file": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\processed\\c87bfd97-c18e-437c-9552-804494a64bbd.json",
+    "normalized_file": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\processed\\c87bfd97-c18e-437c-9552-804494a64bbd_normalized.json",
+    "chunk_count": 11,
+    "indexed_chunk_count": 11
+  },
+  {
+    "document_id": "3fcc6d62-86ca-46b3-9b00-8f9b2947cd81",
+    "filename": "Nvidia Form10K _2024_.pdf",
+    "file_path": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\uploads\\3fcc6d62-86ca-46b3-9b00-8f9b2947cd81.pdf",
+    "size_bytes": 1074533,
+    "file_hash": "536f66d7f1c3413abbf643e0a02bd0aab65639116fe630225f3f93529244658b",
+    "status": "indexed",
+    "processed_file": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\processed\\3fcc6d62-86ca-46b3-9b00-8f9b2947cd81.json",
+    "normalized_file": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\processed\\3fcc6d62-86ca-46b3-9b00-8f9b2947cd81_normalized.json",
+    "chunk_count": 75,
+    "indexed_chunk_count": 75
+  },
+  {
+    "document_id": "df69bb5d-b76d-45b6-8b2f-31ac8afd69fa",
+    "filename": "Apple Inc. SEC Form 10K.pdf",
+    "file_path": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\uploads\\df69bb5d-b76d-45b6-8b2f-31ac8afd69fa.pdf",
+    "size_bytes": 1093835,
+    "file_hash": "ec74758cd767465362c641cf2fd5d8fedd477aed2bf7f62117e67610435dcb88",
+    "status": "indexed",
+    "processed_file": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\processed\\df69bb5d-b76d-45b6-8b2f-31ac8afd69fa.json",
+    "normalized_file": "C:\\Users\\KIIT0001\\Documents\\project-master-folder\\project\\financial-ai-platform\\apps\\llm-service\\data\\processed\\df69bb5d-b76d-45b6-8b2f-31ac8afd69fa_normalized.json",
+    "chunk_count": 118,
+    "indexed_chunk_count": 118
+  }
+]

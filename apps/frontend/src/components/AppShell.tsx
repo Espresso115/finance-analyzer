@@ -5,13 +5,11 @@ import {
   LayoutDashboard,
   User,
   Settings,
-  Key,
   ChevronLeft,
   ChevronRight,
   Menu,
   X,
   LogOut,
-  Bell,
   FileText,
   MessageSquareText,
   LineChart,
@@ -30,7 +28,6 @@ const NAV_ITEMS = [
   { to: '/analysis', icon: MessageSquareText, label: 'Analysis' },
   { to: '/profile', icon: User, label: 'Profile' },
   { to: '/settings', icon: Settings, label: 'Settings' },
-  { to: '/api-keys', icon: Key, label: 'API Keys' },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -311,13 +308,6 @@ export function AppShell({ children }: PropsWithChildren) {
 
             {/* Header actions */}
             <div className="flex items-center gap-1.5 ml-auto">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-sm"
-              >
-                <Bell className="w-4 h-4" />
-              </Button>
             </div>
           </header>
 

@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {
   Dialog,
@@ -18,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { KeyRound, User, Loader2, CheckCircle2, AlertCircle, Mail, ShieldCheck, UserMinus, LogOut } from 'lucide-react';
+import { KeyRound, User, Loader2, CheckCircle2, AlertCircle, Mail, UserMinus, LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 export function ProfilePage() {
@@ -114,13 +112,6 @@ export function ProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-5">
-                {/* Avatar */}
-                <Avatar className="w-16 h-16 flex-shrink-0">
-                  <AvatarFallback className="bg-gradient-to-br from-primary/30 to-primary/10 text-primary text-xl font-bold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-
                 <div className="flex-1 grid gap-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
@@ -136,16 +127,6 @@ export function ProfilePage() {
                         Email
                       </div>
                       <p className="text-sm font-medium break-all">{user?.email ?? '—'}</p>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center gap-3">
-                    <div className="space-y-1">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Role</p>
-                      <Badge variant="info" className="capitalize">
-                        <ShieldCheck className="w-3 h-3 mr-1" />
-                        {user?.role ?? 'user'}
-                      </Badge>
                     </div>
                   </div>
                 </div>

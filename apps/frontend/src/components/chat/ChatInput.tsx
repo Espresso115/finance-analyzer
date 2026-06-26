@@ -64,14 +64,6 @@ export function ChatInput({
 
       {/* Input bar */}
       <div className="bg-card border border-border rounded-sm flex items-end gap-2 p-1.5 transition-all duration-200 focus-within:border-primary/50 shadow-sm">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 flex-shrink-0 text-muted-foreground hover:text-primary rounded-sm"
-          disabled={disabled}
-        >
-          <Paperclip className="w-3.5 h-3.5" />
-        </Button>
 
         <textarea
           ref={textareaRef}

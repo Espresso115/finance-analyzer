@@ -1,0 +1,1503 @@
+{
+    "schema_name": "DoclingDocument",
+    "version": "1.10.0",
+    "name": "c87bfd97-c18e-437c-9552-804494a64bbd",
+    "origin": {
+        "mimetype": "application/pdf",
+        "binary_hash": 18429351774799984787,
+        "filename": "c87bfd97-c18e-437c-9552-804494a64bbd.pdf"
+    },
+    "furniture": {
+        "self_ref": "#/furniture",
+        "children": [],
+        "content_layer": "furniture",
+        "name": "_root_",
+        "label": "unspecified"
+    },
+    "body": {
+        "self_ref": "#/body",
+        "children": [
+            {
+                "$ref": "#/texts/0"
+            },
+            {
+                "$ref": "#/texts/1"
+            },
+            {
+                "$ref": "#/texts/2"
+            },
+            {
+                "$ref": "#/texts/3"
+            },
+            {
+                "$ref": "#/texts/4"
+            },
+            {
+                "$ref": "#/groups/0"
+            },
+            {
+                "$ref": "#/groups/1"
+            },
+            {
+                "$ref": "#/texts/10"
+            },
+            {
+                "$ref": "#/texts/11"
+            },
+            {
+                "$ref": "#/texts/12"
+            },
+            {
+                "$ref": "#/texts/13"
+            },
+            {
+                "$ref": "#/texts/14"
+            },
+            {
+                "$ref": "#/texts/15"
+            },
+            {
+                "$ref": "#/texts/16"
+            },
+            {
+                "$ref": "#/texts/17"
+            },
+            {
+                "$ref": "#/texts/18"
+            },
+            {
+                "$ref": "#/texts/19"
+            },
+            {
+                "$ref": "#/texts/20"
+            },
+            {
+                "$ref": "#/groups/2"
+            },
+            {
+                "$ref": "#/texts/23"
+            },
+            {
+                "$ref": "#/groups/3"
+            },
+            {
+                "$ref": "#/texts/26"
+            },
+            {
+                "$ref": "#/groups/4"
+            },
+            {
+                "$ref": "#/texts/28"
+            },
+            {
+                "$ref": "#/groups/5"
+            },
+            {
+                "$ref": "#/texts/32"
+            },
+            {
+                "$ref": "#/texts/33"
+            },
+            {
+                "$ref": "#/groups/6"
+            },
+            {
+                "$ref": "#/texts/38"
+            },
+            {
+                "$ref": "#/texts/39"
+            },
+            {
+                "$ref": "#/texts/40"
+            },
+            {
+                "$ref": "#/texts/41"
+            },
+            {
+                "$ref": "#/texts/42"
+            },
+            {
+                "$ref": "#/texts/43"
+            }
+        ],
+        "content_layer": "body",
+        "name": "_root_",
+        "label": "unspecified"
+    },
+    "groups": [
+        {
+            "self_ref": "#/groups/0",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/5"
+                }
+            ],
+            "content_layer": "body",
+            "name": "group",
+            "label": "key_value_area"
+        },
+        {
+            "self_ref": "#/groups/1",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/6"
+                },
+                {
+                    "$ref": "#/texts/7"
+                },
+                {
+                    "$ref": "#/texts/8"
+                },
+                {
+                    "$ref": "#/texts/9"
+                }
+            ],
+            "content_layer": "body",
+            "name": "list",
+            "label": "list"
+        },
+        {
+            "self_ref": "#/groups/2",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/21"
+                },
+                {
+                    "$ref": "#/texts/22"
+                }
+            ],
+            "content_layer": "body",
+            "name": "list",
+            "label": "list"
+        },
+        {
+            "self_ref": "#/groups/3",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/24"
+                },
+                {
+                    "$ref": "#/texts/25"
+                }
+            ],
+            "content_layer": "body",
+            "name": "list",
+            "label": "list"
+        },
+        {
+            "self_ref": "#/groups/4",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/27"
+                }
+            ],
+            "content_layer": "body",
+            "name": "list",
+            "label": "list"
+        },
+        {
+            "self_ref": "#/groups/5",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/29"
+                },
+                {
+                    "$ref": "#/texts/30"
+                },
+                {
+                    "$ref": "#/texts/31"
+                }
+            ],
+            "content_layer": "body",
+            "name": "list",
+            "label": "list"
+        },
+        {
+            "self_ref": "#/groups/6",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [
+                {
+                    "$ref": "#/texts/34"
+                },
+                {
+                    "$ref": "#/texts/35"
+                },
+                {
+                    "$ref": "#/texts/36"
+                },
+                {
+                    "$ref": "#/texts/37"
+                }
+            ],
+            "content_layer": "body",
+            "name": "group",
+            "label": "key_value_area"
+        }
+    ],
+    "texts": [
+        {
+            "self_ref": "#/texts/0",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "furniture",
+            "label": "page_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 82.58699999999999,
+                        "t": 732.6394558000001,
+                        "r": 153.42905608000004,
+                        "b": 723.9328898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        14
+                    ]
+                }
+            ],
+            "orig": "+91 7978691843",
+            "text": "+91 7978691843"
+        },
+        {
+            "self_ref": "#/texts/1",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "furniture",
+            "label": "page_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 423.642,
+                        "t": 732.6394558000001,
+                        "r": 529.4099429,
+                        "b": 723.9328898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        22
+                    ]
+                }
+            ],
+            "orig": "github.com/Espresso115",
+            "text": "github.com/Espresso115",
+            "hyperlink": "https://github.com/Espresso115"
+        },
+        {
+            "self_ref": "#/texts/2",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 36.0,
+                        "t": 704.4659728,
+                        "r": 104.08486400000001,
+                        "b": 698.321,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        10
+                    ]
+                }
+            ],
+            "orig": "Experience",
+            "text": "Experience",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/3",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 687.9076426,
+                        "r": 130.33425143,
+                        "b": 678.3320307429394,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        13
+                    ]
+                }
+            ],
+            "orig": "IT/SOC Intern",
+            "text": "IT/SOC Intern",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/4",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.80000000000001,
+                        "t": 673.6794558,
+                        "r": 321.4808371200001,
+                        "b": 664.9728898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        57
+                    ]
+                }
+            ],
+            "orig": "Aditya Aluminium (Aditya Birla), HINDALCO Industries Ltd.",
+            "text": "Aditya Aluminium (Aditya Birla), HINDALCO Industries Ltd."
+        },
+        {
+            "self_ref": "#/texts/5",
+            "parent": {
+                "$ref": "#/groups/0"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 465.297,
+                        "t": 687.8749153,
+                        "r": 570.5949059300002,
+                        "b": 664.9728898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        27
+                    ]
+                }
+            ],
+            "orig": "May 2025 - June 2025 Odisha",
+            "text": "May 2025 - June 2025 Odisha"
+        },
+        {
+            "self_ref": "#/texts/6",
+            "parent": {
+                "$ref": "#/groups/1"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 660.0944558,
+                        "r": 446.5006048600002,
+                        "b": 651.3878898772334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        84
+                    ]
+                }
+            ],
+            "orig": "· Trained in Network Security, Operational Technology Security & Endpoint Protection",
+            "text": "Trained in Network Security, Operational Technology Security & Endpoint Protection",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/7",
+            "parent": {
+                "$ref": "#/groups/1"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 646.5334558,
+                        "r": 482.27430893999997,
+                        "b": 637.8268898772334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        93
+                    ]
+                }
+            ],
+            "orig": "· Gained hands-on experience in securing networks & implementing endpoint defense strategies.",
+            "text": "Gained hands-on experience in securing networks & implementing endpoint defense strategies.",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/8",
+            "parent": {
+                "$ref": "#/groups/1"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 632.9724557999999,
+                        "r": 370.12631700000014,
+                        "b": 624.2658898772333,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        70
+                    ]
+                }
+            ],
+            "orig": "· Understood the security challenges faced in industrial environsments",
+            "text": "Understood the security challenges faced in industrial environsments",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/9",
+            "parent": {
+                "$ref": "#/groups/1"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 619.4114557999999,
+                        "r": 570.2101941000002,
+                        "b": 598.7498898772333,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        141
+                    ]
+                }
+            ],
+            "orig": "· Prepared a detailed report on the company's security architecture, network infrastructure, endpoint solutions, and security tools. [Report]",
+            "text": "Prepared a detailed report on the company's security architecture, network infrastructure, endpoint solutions, and security tools. [Report]",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/10",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 36.0,
+                        "t": 569.1789728,
+                        "r": 123.85398272,
+                        "b": 563.034,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        14
+                    ]
+                }
+            ],
+            "orig": "Certifications",
+            "text": "Certifications",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/11",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 552.6206426,
+                        "r": 512.2934849,
+                        "b": 543.0450307429394,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        82
+                    ]
+                }
+            ],
+            "orig": "Google Cybersecurity Specialization, Cisco Cybersecurity Operations Specialization",
+            "text": "Google Cybersecurity Specialization, Cisco Cybersecurity Operations Specialization",
+            "hyperlink": "https://coursera.org/verify/specialization/SQWRV9A1AIH6",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/12",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 538.3434558,
+                        "r": 564.0412555800001,
+                        "b": 529.6368898772334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        111
+                    ]
+                }
+            ],
+            "orig": "Frameworks, Risk Management, Network Security, Detection & Response, Threat Analysis & Vulnerability Assessment",
+            "text": "Frameworks, Risk Management, Network Security, Detection & Response, Threat Analysis & Vulnerability Assessment"
+        },
+        {
+            "self_ref": "#/texts/13",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 524.8646426,
+                        "r": 218.67723414000005,
+                        "b": 515.2890307429394,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        28
+                    ]
+                }
+            ],
+            "orig": "TryHackMe Penetration Tester",
+            "text": "TryHackMe Penetration Tester",
+            "hyperlink": "https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-VXMUOROHQF.pdf",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/14",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 510.58745580000004,
+                        "r": 396.85189116,
+                        "b": 501.88088987723347,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        78
+                    ]
+                }
+            ],
+            "orig": "Web Pentesting, Reconnaissance, Burp Suite, Metasploit, Vulnerability Research",
+            "text": "Web Pentesting, Reconnaissance, Burp Suite, Metasploit, Vulnerability Research"
+        },
+        {
+            "self_ref": "#/texts/15",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 497.1076426,
+                        "r": 265.61363689,
+                        "b": 487.5320307429395,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        39
+                    ]
+                }
+            ],
+            "orig": "Certified Network Security Practitioner",
+            "text": "Certified Network Security Practitioner",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/16",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 482.83045580000004,
+                        "r": 417.2274006799999,
+                        "b": 474.12388987723347,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        81
+                    ]
+                }
+            ],
+            "orig": "Networking Security, Web Application Security, Monitoring Logs & Threat Detection",
+            "text": "Networking Security, Web Application Security, Monitoring Logs & Threat Detection"
+        },
+        {
+            "self_ref": "#/texts/17",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 469.3506426,
+                        "r": 323.5311397,
+                        "b": 459.7750307429395,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        47
+                    ]
+                }
+            ],
+            "orig": "DeepLearning.AI Machine Learning Specialization",
+            "text": "DeepLearning.AI Machine Learning Specialization",
+            "hyperlink": "https://coursera.org/verify/specialization/0LVYO2KULNWV",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/18",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 455.07345580000003,
+                        "r": 364.59299236000004,
+                        "b": 446.36688987723346,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        71
+                    ]
+                }
+            ],
+            "orig": "Supervised Learning(Regression & Classification), Unsupervised Learning",
+            "text": "Supervised Learning(Regression & Classification), Unsupervised Learning"
+        },
+        {
+            "self_ref": "#/texts/19",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 36.0,
+                        "t": 421.50397280000004,
+                        "r": 90.75122943999999,
+                        "b": 415.35900000000004,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        8
+                    ]
+                }
+            ],
+            "orig": "Projects",
+            "text": "Projects",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/20",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 402.30434360000004,
+                        "r": 363.1074222,
+                        "b": 393.55953507435163,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        69
+                    ]
+                }
+            ],
+            "orig": "Registry Analysis Tool | Python (python-registry, colorama, tabulate)",
+            "text": "Registry Analysis Tool | Python (python-registry, colorama, tabulate)"
+        },
+        {
+            "self_ref": "#/texts/21",
+            "parent": {
+                "$ref": "#/groups/2"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.525999999999996,
+                        "t": 388.6964558,
+                        "r": 496.37537297999984,
+                        "b": 379.98988987723345,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        101
+                    ]
+                }
+            ],
+            "orig": "· Built a CLI-based Windows Registry analysis tool for parsing .dat hive files and forensic artifacts",
+            "text": "Built a CLI-based Windows Registry analysis tool for parsing .dat hive files and forensic artifacts",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/22",
+            "parent": {
+                "$ref": "#/groups/2"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.525999999999996,
+                        "t": 375.13545580000005,
+                        "r": 554.0478681200004,
+                        "b": 366.4288898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        107
+                    ]
+                }
+            ],
+            "orig": "· Decoded artifacts like RecentDocs, Shellbags, and MRU lists and exported findings in JSON and CSV formats",
+            "text": "Decoded artifacts like RecentDocs, Shellbags, and MRU lists and exported findings in JSON and CSV formats",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/23",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 353.5223436,
+                        "r": 440.42653784000004,
+                        "b": 344.7775350743516,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        82
+                    ]
+                }
+            ],
+            "orig": "SOC Simulation in Raspberry Pi 5 | Linux (Suricata, Python, Elasticsearch, Kibana)",
+            "text": "SOC Simulation in Raspberry Pi 5 | Linux (Suricata, Python, Elasticsearch, Kibana)",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/24",
+            "parent": {
+                "$ref": "#/groups/3"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 339.9144558,
+                        "r": 527.8402525600001,
+                        "b": 331.2078898772334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        107
+                    ]
+                }
+            ],
+            "orig": "· Built a portable SOC lab using Raspberry Pi 5 and Suricata IDS for real-time and offline traffic analysis",
+            "text": "Built a portable SOC lab using Raspberry Pi 5 and Suricata IDS for real-time and offline traffic analysis",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/25",
+            "parent": {
+                "$ref": "#/groups/3"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 326.3534558,
+                        "r": 557.9502185399997,
+                        "b": 317.64688987723343,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        109
+                    ]
+                }
+            ],
+            "orig": "· Integrated Suricata EVE JSON logs with Elasticsearch and Kibana for centralized log monitoring and querying",
+            "text": "Integrated Suricata EVE JSON logs with Elasticsearch and Kibana for centralized log monitoring and querying",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/26",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.80000000000001,
+                        "t": 304.74034359999996,
+                        "r": 395.09313306,
+                        "b": 295.99553507435155,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        71
+                    ]
+                }
+            ],
+            "orig": "Financial Report Analysis System | Python (pymupdf, pdfplumber, pandas)",
+            "text": "Financial Report Analysis System | Python (pymupdf, pdfplumber, pandas)",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/27",
+            "parent": {
+                "$ref": "#/groups/4"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 291.13245579999995,
+                        "r": 571.0619964,
+                        "b": 270.4708898772334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        144
+                    ]
+                }
+            ],
+            "orig": "· Developed a PDF parsing pipeline to extract and transform data from 10-K/10-Q financial reports into structured JSON for downstream processing",
+            "text": "Developed a PDF parsing pipeline to extract and transform data from 10-K/10-Q financial reports into structured JSON for downstream processing",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/28",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.80000000000001,
+                        "t": 257.5643435999999,
+                        "r": 356.23075561999997,
+                        "b": 248.8195350743515,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        61
+                    ]
+                }
+            ],
+            "orig": "Backend & Fullstack Projects | NodeJS/Express, MongoDB, React",
+            "text": "Backend & Fullstack Projects | NodeJS/Express, MongoDB, React",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/29",
+            "parent": {
+                "$ref": "#/groups/5"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 243.98634359999994,
+                        "r": 451.4572682200001,
+                        "b": 235.24153507435153,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        81
+                    ]
+                }
+            ],
+            "orig": "· Notes App: a lightweigh note management web application with CRUD functionality",
+            "text": "Notes App: a lightweigh note management web application with CRUD functionality",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/30",
+            "parent": {
+                "$ref": "#/groups/5"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 230.4253435999999,
+                        "r": 559.9004931799998,
+                        "b": 209.7338898772333,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        126
+                    ]
+                }
+            ],
+            "orig": "· Subscription Tracker: a subscription management API with secure authentication, database integration, and renewal reminders.",
+            "text": "Subscription Tracker: a subscription management API with secure authentication, database integration, and renewal reminders.",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/31",
+            "parent": {
+                "$ref": "#/groups/5"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 61.52600000000001,
+                        "t": 204.90934359999994,
+                        "r": 561.02772892,
+                        "b": 184.21788987723335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        192
+                    ]
+                }
+            ],
+            "orig": "· Audio Processing Pipeline: a backend workflow for audio processing, that integrates yt-dlp and FFmpeg for metadata scraping, extracts audio and converts the media to a downloadable MP3 file.",
+            "text": "Audio Processing Pipeline: a backend workflow for audio processing, that integrates yt-dlp and FFmpeg for metadata scraping, extracts audio and converts the media to a downloadable MP3 file.",
+            "enumerated": false,
+            "marker": "·"
+        },
+        {
+            "self_ref": "#/texts/32",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 36.000000000000014,
+                        "t": 155.94197279999992,
+                        "r": 72.26370816000001,
+                        "b": 149.7969999999999,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        6
+                    ]
+                }
+            ],
+            "orig": "Skills",
+            "text": "Skills",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/33",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 139.30834359999994,
+                        "r": 560.3831939199998,
+                        "b": 118.61588987723337,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        128
+                    ]
+                }
+            ],
+            "orig": "Core Concepts : Operating Systems, Computer Networking, Data Structures & Algorithms, Artificial Intelligence & Machine Learning",
+            "text": "Core Concepts : Operating Systems, Computer Networking, Data Structures & Algorithms, Artificial Intelligence & Machine Learning"
+        },
+        {
+            "self_ref": "#/texts/34",
+            "parent": {
+                "$ref": "#/groups/6"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 115.3973436,
+                        "r": 538.3919972799998,
+                        "b": 94.7058898772334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        162
+                    ]
+                }
+            ],
+            "orig": "Cybersecurity : Web Application Pentesting, Digital Forensics & Incident Response (DFIR), Network Security, Endpoint Security, Threat intelligence, SOC Operations",
+            "text": "Cybersecurity : Web Application Pentesting, Digital Forensics & Incident Response (DFIR), Network Security, Endpoint Security, Threat intelligence, SOC Operations"
+        },
+        {
+            "self_ref": "#/texts/35",
+            "parent": {
+                "$ref": "#/groups/6"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 91.48734360000003,
+                        "r": 392.25059262,
+                        "b": 82.74253507435162,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        70
+                    ]
+                }
+            ],
+            "orig": "Backend : Node.js, Express.js, REST APIs, MongoDB, Database Management",
+            "text": "Backend : Node.js, Express.js, REST APIs, MongoDB, Database Management"
+        },
+        {
+            "self_ref": "#/texts/36",
+            "parent": {
+                "$ref": "#/groups/6"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.8,
+                        "t": 79.53234359999999,
+                        "r": 339.97169084000006,
+                        "b": 70.78753507435158,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        59
+                    ]
+                }
+            ],
+            "orig": "Programming Languages : Java, Python, JavaScript, C, SQL, R",
+            "text": "Programming Languages : Java, Python, JavaScript, C, SQL, R"
+        },
+        {
+            "self_ref": "#/texts/37",
+            "parent": {
+                "$ref": "#/groups/6"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 46.80000000000001,
+                        "t": 67.57734359999995,
+                        "r": 549.67120598,
+                        "b": 46.88488987723338,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        124
+                    ]
+                }
+            ],
+            "orig": "Soft Skills : Problem Solving, Analytical Thinking, Project Management, Communication, Adaptability, Technical Documentation",
+            "text": "Soft Skills : Problem Solving, Analytical Thinking, Project Management, Communication, Adaptability, Technical Documentation"
+        },
+        {
+            "self_ref": "#/texts/38",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 156.754,
+                        "t": 732.6394558000001,
+                        "r": 159.52161028,
+                        "b": 724.0749140997334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        1
+                    ]
+                }
+            ],
+            "orig": "|",
+            "text": "|"
+        },
+        {
+            "self_ref": "#/texts/39",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 212.238,
+                        "t": 755.7909506000001,
+                        "r": 399.74993278999983,
+                        "b": 734.033734270317,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        15
+                    ]
+                }
+            ],
+            "orig": "Sai Satwik Pati",
+            "text": "Sai Satwik Pati",
+            "level": 1
+        },
+        {
+            "self_ref": "#/texts/40",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 162.84199999999998,
+                        "t": 732.6394558000001,
+                        "r": 262.5217980400001,
+                        "b": 723.9328898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        21
+                    ]
+                }
+            ],
+            "orig": "satwik.pati@gmail.com",
+            "text": "satwik.pati@gmail.com",
+            "hyperlink": "mailto:satwik.pati@gmail.com"
+        },
+        {
+            "self_ref": "#/texts/41",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 265.845,
+                        "t": 732.6394558000001,
+                        "r": 268.61261028,
+                        "b": 724.0749140997334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        1
+                    ]
+                }
+            ],
+            "orig": "|",
+            "text": "|"
+        },
+        {
+            "self_ref": "#/texts/42",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 271.93300000000005,
+                        "t": 732.6394558000001,
+                        "r": 414.22981206,
+                        "b": 723.9328898772335,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        30
+                    ]
+                }
+            ],
+            "orig": "www.linkedin.com/in/satwikpati",
+            "text": "www.linkedin.com/in/satwikpati",
+            "hyperlink": "https://linkedin.com/in/satwikpati"
+        },
+        {
+            "self_ref": "#/texts/43",
+            "parent": {
+                "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+                {
+                    "page_no": 1,
+                    "bbox": {
+                        "l": 417.554,
+                        "t": 732.6394558000001,
+                        "r": 420.32161027999996,
+                        "b": 724.0749140997334,
+                        "coord_origin": "BOTTOMLEFT"
+                    },
+                    "charspan": [
+                        0,
+                        1
+                    ]
+                }
+            ],
+            "orig": "|",
+            "text": "|"
+        }
+    ],
+    "pictures": [],
+    "tables": [],
+    "key_value_items": [],
+    "form_items": [],
+    "pages": {
+        "1": {
+            "size": {
+                "width": 612.0,
+                "height": 792.0
+            },
+            "page_no": 1
+        }
+    }
+}

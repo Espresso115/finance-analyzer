@@ -8,6 +8,7 @@ import {
   normalizeDocumentTags,
   serializeDocument
 } from '../services/document.service.js';
+import { ingestDocumentWithRag, isRagIntegrationEnabled } from '../services/llmRag.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,10 @@ export const ensureDocumentUploadDirectory = async (root = documentUploadRoot) =
 };
 
 const getUserId = (req) => req.user._id;
+const RAG_INGESTIBLE_MIME_TYPES = new Set([
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+]);
 
 const parseLimit = (value, fallback = 20) => {
   const parsed = Number.parseInt(value, 10);
@@ -62,6 +67,34 @@ export const uploadDocuments = async (req, res) => {
         tags,
         ...parseResult
       });
+
+      if (isRagIntegrationEnabled() && RAG_INGESTIBLE_MIME_TYPES.has(file.mimetype)) {
+        document.status = 'processing';
+        await document.save();
+
+        try {
+          const ragResult = await ingestDocumentWithRag(file);
+
+          if (ragResult) {
+            document.ragDocumentId = ragResult.documentId || '';
+            document.status = ragResult.status === 'indexed' ? 'completed' : 'processing';
+            document.chunkCount = ragResult.indexedChunkCount || ragResult.chunkCount || document.chunkCount;
+            document.parseMetadata = {
+              parser: 'rag-pipeline',
+              contentType: file.mimetype,
+              wordCount: document.parseMetadata?.wordCount || 0
+            };
+            document.errorMessage = '';
+            document.processedAt = new Date();
+            await document.save();
+          }
+        } catch (ragError) {
+          document.status = 'error';
+          document.errorMessage = ragError.message;
+          await document.save();
+          console.error(`RAG Ingestion Error (${file.originalname}): ${ragError.message}`);
+        }
+      }
 
       documents.push(serializeDocument(document, { includeText: false }));
     }

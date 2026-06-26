@@ -66,6 +66,7 @@ export interface Conversation {
   createdAt: string;
   updatedAt: string;
   messageCount: number;
+  documentIds: string[];
 }
 
 // Index stats

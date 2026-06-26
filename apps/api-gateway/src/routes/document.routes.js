@@ -39,7 +39,7 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     if (!isSupportedDocumentFile(file)) {
-      const error = new Error('Only PDF, DOCX, TXT, Markdown, and CSV documents are supported');
+      const error = new Error('Only PDF documents are supported');
       error.statusCode = 422;
       error.code = 'UNSUPPORTED_DOCUMENT_TYPE';
       cb(error);

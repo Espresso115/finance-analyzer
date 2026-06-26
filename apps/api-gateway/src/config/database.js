@@ -5,10 +5,12 @@ const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
-      throw new Error('MONGODB_URI is not defined in the environment variables');
+      throw new Error('MONGODB_URI is not defined in the environment variables. Please provide a valid MongoDB connection string (e.g., MongoDB Atlas).');
     }
 
-    const conn = await mongoose.connect(mongoUri);
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000, // Graceful connection validation
+    });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
     mongoose.connection.on('error', (err) => {
