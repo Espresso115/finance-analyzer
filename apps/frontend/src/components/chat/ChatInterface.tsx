@@ -45,7 +45,7 @@ const sidebarVariants = {
 
 export function ChatInterface() {
   const { conversations, documents, messages, activeConversationId, setActiveConversation, addMessage, deleteConversation, renameConversation, loadConversations } = useRagStore();
-  const userId = useAuthStore((state) => state.user?._id);
+  const userId = useAuthStore((state) => state.user?.id);
   
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);

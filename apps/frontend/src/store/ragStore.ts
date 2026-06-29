@@ -72,7 +72,16 @@ export const useRagStore = create<RAGState>()(
               role: m.role,
               content: m.content,
               timestamp: m.timestamp || c.createdAt,
-              sources: [],
+              sources: m.sources ? m.sources.map((s, idx) => ({
+                sourceId: idx + 1,
+                score: Math.max(0, Math.min(Number(s.score) || 0, 1)),
+                documentId: s.documentId,
+                chunkId: '',
+                sectionId: '',
+                filename: s.documentName,
+                text: s.snippet,
+                metadata: {}
+              })) : [],
             }));
           } else {
             messages[c.id] = [];
@@ -170,7 +179,12 @@ export const useRagStore = create<RAGState>()(
         id: message.id,
         role: message.role,
         content: message.content,
-        sources: [],
+        sources: message.sources ? message.sources.map((s) => ({
+          documentId: s.documentId,
+          documentName: s.filename,
+          snippet: s.text,
+          score: s.score
+        })) : [],
         timestamp: message.timestamp,
       }).catch((err) => console.warn('Could not persist message to backend:', err));
 
